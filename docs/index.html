@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <style>
+        body {
+            padding: 100px;
+            width: 1000px;
+            margin: auto;
+            text-align: left;
+            font-weight: 300;
+            font-family: 'Open Sans', sans-serif;
+            color: #121212;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+    </style>
+    <title>CS 184 Cloth Simulation</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+<body>
+    <br />
+    <h1 align="middle">Assignment 4: Cloth Simulation</h1>
+    <h2 align="middle">Divi Schmidt</h2>
+
+    <div class="padded" align='middle'>
+        <p>
+            In this project, I created a simulation of a piece of cloth. Yes, just a piece of cloth. Yet this is much
+            more difficult than one would think. Within this simulation, there are many parameters that you can tweak in
+            order to achieve the type of cloth and level of realism you would like. Here is a project showing all of the
+            important aspects to keep in mind when trying to simulate movement and collisions, and realistic lighting
+            and materials.
+        </p>
+        <h2 align="middle">Part 1: Masses and Springs</h2>
+        <p>In this part of the project, I implemented the construction of a spring mass system. Due to the 2D like
+            nature of cloth, this system was 2D, and contained springs in the horizontal, vertical, and diagonal
+            directions, and also included springs attached to every other point. Here are some images of this
+            mass-spring system.</p>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/pt1.png" width="480px" />
+                        <figcaption align="middle">The beginnings of a cloth.
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/allconstraints.png" width="480px">
+                        <figcaption align="middle">The mass spring system will all constraints active.</figcaption>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="middle">
+                        <img src="images/shearing.png" width="480px" />
+                        <figcaption align="middle">Only the shearing constraints.</figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/noshearing.png" width="480px">
+                        <figcaption align="middle">Without shearing constraints.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br><br>
+        <h2>Part 2: Simulation via numerical integration</h2>
+        <p>In this part of the project, I used verelet integration to update each point masses position based on the
+            forces acting upon it. This allowed me to realistically simulate a cloth responding to the affects of
+            gravity. In this simulation, there are a couple parameters that we can modify to change the nature of the
+            simulation: ks, density, and damping. Ks is the value of the spring constant in Hooke's Law, and modifies
+            the amount of force a spring applies when it is stretched or squashed. Increasing this value makes the cloth
+            look much more rigid and resistant to gravity. There is a lot less bending in the cloth as you can see in
+            the image below. Reducing this value has the opposite affect, the cloth is much "looser" looking and there
+            are more wrinkles introduced in the cloth's final resting spot as you can see below.</p>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/k50000.png" width="480px" />
+                        <figcaption align="middle">K value of 50000
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/k500.png" width="480px">
+                        <figcaption align="middle">K value of 500</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p>Density is used in the calculation of the mass of the cloth, and thus affects the force and acceleration of
+            the cloth. Therefore, the cloth responds to gravitational pull differently when we change the density. As
+            you can see in the first image, the cloth with a lower density is being pulled down by gravity much more
+            noticeably. The fold at the top of the cloth is much larger and pronounced than the cloth with the higher
+            density. The cloth with the higher density still sags, but the wrinkles in the cloth are much smaller and
+            less pronounced.
+        </p>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/d10.png" width="480px" />
+                        <figcaption align="middle">Density of 10
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/d1000.png" width="480px">
+                        <figcaption align="middle">Density of 1000</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p>
+            Damping is a percentage value that denotes how much of the energy in the simulation is lost at each time
+            step. This is to simulate the natural energy "loss" due to heat and friction, and also so that our
+            simulations do not get out of hand. The higher this value is, the less energetic the entire simulation
+            looks. The cloth bounces much less and moves less distances when the damping is higher because more of this
+            energy is being lost. When it is very low, the opposite affect happens and the objects seem to bounce around
+            much more lively.
+        </p>
+
+        <h2>Part 3: Handling collisions with other objects</h2>
+        <p>In this section, I implemented collisions with other objects. This means that when a point intersected a
+            sphere or plane, its position was modified/corrected so that it was no longer intersecting the plane. Here
+            is an image of the cloth draped over the sphere as it has collided with it.
+        </p>
+        <br><br>
+
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/sphere500.png" width="480px" />
+                        <figcaption align="middle">Ks of 500
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/sphere5000.png" width="480px">
+                        <figcaption align="middle">Ks of 5000</figcaption>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="middle">
+                        <img src="images/sphere5000.png" width="480px" />
+                        <figcaption align="middle">Ks of 5000
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/sphere50000.png" width="480px">
+                        <figcaption align="middle">Ks of 50000. So rigid.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p>As you can see from the images above, the different ks values modified the resulting image greatly. The cloth
+            with the very high ks looks much more rigid and resistant to being draped around the sphere. This is because
+            the high ks constant makes this cloth much more resistant to bending or shearing as these springs exert a
+            lot of force when they are displaced. On the other side of the coin, the cloth with the very low ks constant
+            is very "soft" looking and is draped around the sphere very closely, and with lots of bends. This is because
+            of the opposite reason: the springs do not exert much force and therefore are more susceptible to being
+            disformed.</p>
+
+        <br><br>
+        <p>
+            Here is an example of the plane intersection also being successfully performed.
+        </p>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/plane.png" width="480px" />
+                        <figcaption align="middle">cloth resting on the plane.
+                        </figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <h2>Part 4: Self Collision</h2>
+        In this section, I implemented self collision so that the cloth does not cross itself and instead folds like
+        normal cloths do. This was done in a similar fashion to the previous collision tests, except I took an average
+        of the collision vectors since often there are multiple self collisions at once. Here are some images of the
+        cloth folding on itself without colliding/intersecting itself.
+        <div>
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/fold1.png" width="480px" />
+                        <figcaption align="middle">The beginnings of the folds.
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/fold2.png" width="480px">
+                        <figcaption align="middle">Midway through the folding.</figcaption>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td align="middle">
+                        <img src="images/fold3.png" width="480px">
+                        <figcaption align="middle">In a more restful state. Lovely folds.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br><br>
+
+        When you increase the ks of the cloth, the cloth resists folding more and more. As you can see in the images
+        below, the cloth with the very high ks has much fewer folds and is more smooth looking. This is because the
+        springs are exerting more force on the other points in the mesh and therefore exerting more force away from
+        itself and resisting folds. At a lower ks, there are much more folds as these springs exert less forces.
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/foldk500.png" width="480px" />
+                        <figcaption align="middle">Ks of 500.
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/foldk50000.png" width="480px">
+                        <figcaption align="middle">Ks of 50000</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br><br>
+        When you increase the density of the cloth, it looks to be more bumpy than cloths with lower density. This is
+        shown in the images below. Since the density increases the mass of the cloth, this increases the amount of
+        gravitational force that is applied to the cloth. This makes the springs bend out of place more and gives the
+        cloth a more bump look than the less dense cloths. This also causes the cloth with the higher density to look
+        more "bouncy" or move more and resist a restful state.
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/foldd15.png" width="480px" />
+                        <figcaption align="middle">Density of 15.
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/foldd500.png" width="480px">
+                        <figcaption align="middle">Density of 500.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>Part 5: Shaders</h2>
+        <p>A shader is a program that modifies exactly one vertex or one fragment at a time. It is designed this way so
+            that we can apply this program to each vertex on a mesh or each fragment on a mesh very quickly and
+            efficiently. This is used to create all sorts of interesting affects, and in this project we use these
+            shaders to create interesting looking materials and affects on our cloth. As you can see from the results
+            below, there are a wide range of things you can do with the shaders. Vertex shaders modify the vertices of a
+            mesh only, and its results are then interpolated across the triangles using barycentric interpolation. These
+            results can then be passed to the fragment shaders. Fragment shaders modify each fragment, or pixel in this
+            case, of the mesh, thus modifying the mesh more finely, and often use the information calculated in a vertex
+            shader. You can see some examples of this below.</p>
+
+        <br>
+        <p>The blinn-phong shading model is a way of shading an object in a pseudo-realistic manner. It has three
+            components: the ambient lighting, the diffuse lighting, and the specular lighting. All three are combined in
+            various ways to make different looking materials. The specular lighting defines how "shiny" an object looks
+            as it emulates the lighting reflections we get from objects. Diffuse lighing shows the average direct
+            lighting we get from lighting so as to increase the realism of the lighting, and ambient lighting is a
+            uniform addition of light to an object in order to emulate indirect lighting that happens in the real world.
+            Here are some images of the different elements of phong shading to show this affect more meaningfully.</p>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/specular.png" width="480px" />
+                        <figcaption align="middle">Only specular shading.
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/diffuse.png" width="480px">
+                        <figcaption align="middle">Only diffuse shading.</figcaption>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="middle">
+                        <img src="images/ambient.png" width="480px" />
+                        <figcaption align="middle">Only ambient shading.
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/phong.png" width="480px">
+                        <figcaption align="middle">Complete Phong shading.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br>
+        <p>Here is an image of the texture shader, using my photo of beautiful poppies as the texture.</p>
+        <img src="images/flowertexture.png" width="480px">
+        <br>
+
+        <p>Here's some images of the bump map shader. On the cloth and on the sphere.</p>
+        <img src="images/bump.png" width="480px">
+        <img src="images/bump_sphere.png" width="480px">
+        <br>
+        <p>While the two approaches are both trying to achieve same affect: a less smooth looking cloth/ a textured
+            cloth, they differ greatly in their results. Bump mapping achieves a textured looking surface by modifying
+            the normals of a rather smooth surface in order to gain the different lighting affects that come from bumpy
+            surfaces. The results using this technique are shown below. Displacement mapping achieves a textured affect
+            by actually making the cloth bumpy. It changes the actual geometry of the mesh and therefore also achieves
+            the lighing affects that come with a bumpy surface. This makes the cloth look more realistic along the
+            edges, as you can see the cloth is not toally flush with the sphere or draped nicely around it like it is
+            when using the bump mapping shader.
+        </p>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img src="images/bump.png" width="480px" />
+                        <figcaption align="middle">Bump mapping.
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img src="images/displace.png" width="480px">
+                        <figcaption align="middle">Displacement mapping.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <p>
+            One thing to note is that displacement mapping is much more reliant on the geometry of the mesh, and
+            therefore changes greatly when we change the coarseness of the mesh. The images above are rendered with a
+            much coarser mesh, whereas the images below are using a much more fine mesh. As you can see, the bump
+            mapping is very similar to the one before, whereas the displacement mapping looks much different. The bumps
+            are less pronounced and the texture is much more smooth than before. This is because modifying the normals
+            has a smaller footprint on the mesh than with a coarser one. </p>
+    </div>
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+                <td align="middle">
+                    <img src="images/bump_coarser.png" width="480px" />
+                    <figcaption align="middle">Finer bump mapping.
+                    </figcaption>
+                </td>
+                <td align="middle">
+                    <img src="images/displace_coarser.png" width="480px">
+                    <figcaption align="middle">Finer displacement mapping.</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <p>For the final part of the project, I implemented a mirror shader. Here are the beautiful results.</p>
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+                <td align="middle">
+                    <img src="images/mirror.png" width="480px" />
+                </td>
+                <td align="middle">
+                    <img src="images/mirror_sphere.png" width="480px">
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
