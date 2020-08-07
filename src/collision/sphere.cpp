@@ -40,17 +40,18 @@ void Sphere::simulate(double delta_t, Vector3D gravity_vec) {
     // Add forces
     forces = Vector3D(0.0, 0.0, 0.0);
     // Add gravity
-    forces += gravity_vec * mass;
+    forces += gravity_vec * GRAVITY_MULTIPLIER * mass;
 
     // Update position
-    update_position(delta_t);
+    update_moments(delta_t);
 }
 
-void Sphere::update_position(double delta_t) {
+void Sphere::update_moments(double delta_t) {
     // Add the forces to the sphere
     if (pinned) {
         return;
     }
 
-    origin = origin + delta_t * velocity + pow(delta_t, 2) * forces;
+    velocity += pow(delta_t, 2) * forces / mass;
+    origin = origin + delta_t * velocity;
 }

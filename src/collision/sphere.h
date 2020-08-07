@@ -1,6 +1,8 @@
 #ifndef COLLISIONOBJECT_SPHERE_H
 #define COLLISIONOBJECT_SPHERE_H
 
+#define GRAVITY_MULTIPLIER 1000
+
 #include "../clothMesh.h"
 #include "../misc/sphere_drawing.h"
 #include "collisionObject.h"
@@ -17,7 +19,7 @@ public:
     void render(GLShader &shader);
     void collide(PointMass &pm);
     void set_pinned(bool);
-    void update_position(double);
+    void update_moments(double);
     void simulate(double, Vector3D);
 
 private:
@@ -34,6 +36,7 @@ private:
     Vector3D velocity = Vector3D(0.0, 0.0, 0.0);
     Vector3D forces = Vector3D(0.0, 0.0, 0.0);
     double mass = 100;
+    const double gravity_multiplier = 1000;
 
 
     Misc::SphereMesh m_sphere_mesh;
