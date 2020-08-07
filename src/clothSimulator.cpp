@@ -246,6 +246,11 @@ void ClothSimulator::drawContents() {
 
     for (int i = 0; i < simulation_steps; i++) {
       cloth->simulate(frames_per_sec, simulation_steps, cp, external_accelerations, collision_objects);
+
+      // Update all the positions of the collision objects
+      for (int i = 0; i < collision_objects->size(); i++) {
+          collision_objects->at(i)->simulate(1.0f / frames_per_sec / simulation_steps, gravity);
+      }
     }
   }
 

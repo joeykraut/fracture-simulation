@@ -31,3 +31,26 @@ void Sphere::render(GLShader &shader) {
   // and intersect with the sphere when rendered
   m_sphere_mesh.draw_sphere(shader, origin, radius * 0.92);
 }
+
+void Sphere::set_pinned(bool pinned) {
+    this->pinned = pinned;
+}
+
+void Sphere::simulate(double delta_t, Vector3D gravity_vec) {
+    // Add forces
+    forces = Vector3D(0.0, 0.0, 0.0);
+    // Add gravity
+    forces += gravity_vec * mass;
+
+    // Update position
+    update_position(delta_t);
+}
+
+void Sphere::update_position(double delta_t) {
+    // Add the forces to the sphere
+    if (pinned) {
+        return;
+    }
+
+    origin = origin + delta_t * velocity + pow(delta_t, 2) * forces;
+}

@@ -17,6 +17,7 @@ public:
 
   void render(GLShader &shader);
   void collide(PointMass &pm);
+  void simulate(double, Vector3D);
 
   Vector3D unit(Vector3D v);
   double norm(Vector3D v);
