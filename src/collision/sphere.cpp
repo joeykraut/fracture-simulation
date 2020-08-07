@@ -20,10 +20,21 @@ void Sphere::collide(PointMass &pm) {
   if (!(norm(origin_to_position) <= radius))
     return;
 
+  // The old position
+  Vector3D old_position = pm.position;
+
   Vector3D correct_point = (unit(origin_to_position) * radius) + origin;
   double length_with_friction = norm(correct_point - pm.last_position) * friction;
   Vector3D correction_vector = unit(correct_point - pm.last_position) * length_with_friction;
   pm.position = correction_vector + pm.last_position;
+
+  // Add the reactionary force to the sphere which has:
+  //    magnitude: The spring collision resistance constant time the displacement caused by sphere
+  //    direction: The new position towards the sphere origin
+  double force_mag = SPRING_COLLISION_RESISTANCE * (old_position - pm.position).norm();
+  Vector3D direction = this->origin - pm.position;
+
+  this->forces += force_mag * direction;
 }
 
 void Sphere::render(GLShader &shader) {
@@ -36,11 +47,17 @@ void Sphere::set_pinned(bool pinned) {
     this->pinned = pinned;
 }
 
+void Sphere::zero_forces() {
+    this->forces = Vector3D(0);
+}
+
 void Sphere::simulate(double delta_t, Vector3D gravity_vec) {
     // Add forces
-    forces = Vector3D(0.0, 0.0, 0.0);
     // Add gravity
-    forces += gravity_vec * GRAVITY_MULTIPLIER * mass;
+    forces += gravity_vec * mass;
+
+    // Multiply the forces by an amplifier constant
+    forces *= FORCE_MULTIPLIER;
 
     // Update position
     update_moments(delta_t);
@@ -52,6 +69,9 @@ void Sphere::update_moments(double delta_t) {
         return;
     }
 
-    velocity += pow(delta_t, 2) * forces / mass;
+    // Damped velocity added with acceleration
+    velocity = DAMPING_COEFF * velocity + pow(delta_t, 2) * forces / mass;
     origin = origin + delta_t * velocity;
 }
+
+

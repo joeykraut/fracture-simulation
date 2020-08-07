@@ -142,6 +142,12 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   double mass = width * height * cp->density / num_width_points / num_height_points;
   double delta_t = 1.0f / frames_per_sec / simulation_steps;
 
+  // Clear collision object forces
+  for (int i = 0; i < collision_objects->size(); i++) {
+      collision_objects->at(i)->zero_forces();
+  }
+
+  // Add external forces
   Vector3D external_force = Vector3D(0);
   for (int i = 0; i < external_accelerations.size(); i++) {
     external_force += mass * external_accelerations[i];

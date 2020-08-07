@@ -18,12 +18,16 @@ public:
   void render(GLShader &shader);
   void collide(PointMass &pm);
   void simulate(double, Vector3D);
+  void zero_forces() {
+      return;
+  }
 
   Vector3D unit(Vector3D v);
   double norm(Vector3D v);
   
   Vector3D point;
   Vector3D normal;
+  Vector3D forces;
 
   double friction;
 };

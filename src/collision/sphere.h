@@ -1,7 +1,10 @@
 #ifndef COLLISIONOBJECT_SPHERE_H
 #define COLLISIONOBJECT_SPHERE_H
 
-#define GRAVITY_MULTIPLIER 1000
+// Increases forces applied to a sphere to speed up slow motion through scene
+#define FORCE_MULTIPLIER 1000
+#define SPRING_COLLISION_RESISTANCE 100000
+#define DAMPING_COEFF 0.999
 
 #include "../clothMesh.h"
 #include "../misc/sphere_drawing.h"
@@ -19,6 +22,7 @@ public:
     void render(GLShader &shader);
     void collide(PointMass &pm);
     void set_pinned(bool);
+    void zero_forces();
     void update_moments(double);
     void simulate(double, Vector3D);
 

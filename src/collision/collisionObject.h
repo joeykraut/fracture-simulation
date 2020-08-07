@@ -14,6 +14,9 @@ public:
   virtual void render(GLShader &shader) = 0;
   virtual void collide(PointMass &pm) = 0;
   virtual void simulate(double, Vector3D) = 0;
+  virtual void zero_forces() = 0;
+
+  Vector3D forces;
 
 private:
   double friction;
