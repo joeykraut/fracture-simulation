@@ -3,7 +3,7 @@
 
 // Increases forces applied to a sphere to speed up slow motion through scene
 #define FORCE_MULTIPLIER 1000
-#define SPRING_COLLISION_RESISTANCE 100000
+#define SPRING_COLLISION_RESISTANCE 30000
 #define DAMPING_COEFF 0.999
 
 #include "../clothMesh.h"
@@ -38,7 +38,7 @@ private:
     // The initial position for resets
     Vector3D initial_position;
     // Sets whether or not the sphere should move
-    bool pinned = false;
+    bool pinned = true;
 
     // The velocity of the sphere and forces acting on it
     Vector3D velocity = Vector3D(0.0, 0.0, 0.0);

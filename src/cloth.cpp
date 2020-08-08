@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "cloth.h"
+#include "edgeSpring.h"
 #include "collision/plane.h"
 #include "collision/sphere.h"
 
@@ -67,46 +68,9 @@ void Cloth::buildGrid() {
       PointMass p = PointMass(pos, isPinned);
       point_masses.emplace_back(pos, isPinned);
     }
-  }  
-
-  // Build all springs
-
-  // Build horizontal springs
-  for (int i = 0; i < num_height_points; i++) {
-    for (int j = 1; j < num_width_points; j++) {
-      PointMass *prev = &point_masses[(i * num_width_points) + j - 1];
-      PointMass *curr = &point_masses[(i * num_width_points) + j];
-      springs.emplace_back(prev, curr, STRUCTURAL);
-    }
   }
 
-  // Build vertical springs
-  for (int i = 1; i < num_height_points; i++) {
-    for (int j = 0; j < num_width_points; j++) {
-      PointMass *prev = &point_masses[((i - 1) * num_width_points) + j];
-      PointMass *curr = &point_masses[(i * num_width_points) + j];
-      springs.emplace_back(prev, curr, STRUCTURAL);
-    }
-  }
-
-  // Build diagonal springs
-  for (int i = 1; i < num_height_points; i++) {
-    for (int j = 1; j < num_width_points; j++) {
-      PointMass *prev = &point_masses[((i - 1) * num_width_points) + j - 1];
-      PointMass *curr = &point_masses[(i * num_width_points) + j];
-      springs.emplace_back(prev, curr, SHEARING);
-    }
-  }
-
-  // Build diagonal springs
-  for (int i = 1; i < num_height_points; i++) {
-    for (int j = 0; j < num_width_points - 1; j++) {
-      PointMass *prev = &point_masses[((i - 1) * num_width_points) + j + 1];
-      PointMass *curr = &point_masses[(i * num_width_points) + j];
-      springs.emplace_back(prev, curr, SHEARING);
-    }
-  }
-
+  // Build all curve springs only
   // Build curve springs
   for (int i = 0; i < num_height_points; i++) {
     for (int j = 2; j < num_width_points; j++) {
@@ -116,7 +80,6 @@ void Cloth::buildGrid() {
     }
   }
 
-
   // Build curve springs
   for (int i = 2; i < num_height_points; i++) {
     for (int j = 0; j < num_width_points; j++) {
@@ -125,7 +88,6 @@ void Cloth::buildGrid() {
       springs.emplace_back(prev, curr, BENDING);
     }
   }
-
 }
 
 double Cloth::norm(Vector3D v) {
@@ -134,6 +96,20 @@ double Cloth::norm(Vector3D v) {
 
 Vector3D Cloth::unit(Vector3D v) {
   return v / norm(v);
+}
+
+bool Cloth::isSpringActive(EdgeSpring *s, ClothParameters *cp) {
+  if (s->fractured) {
+    return false;
+  }
+
+  if ((s->spring_type == STRUCTURAL && cp->enable_structural_constraints) ||
+      (s->spring_type == SHEARING && cp->enable_shearing_constraints) ||
+      (s->spring_type == BENDING && cp->enable_bending_constraints)) {
+      return true;
+  }
+
+  return false;
 }
 
 void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParameters *cp,
@@ -164,14 +140,14 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 
   // compute correction forces
   for (int i = 0; i < springs.size(); i++) {
-    Spring *s = &springs[i];
+    EdgeSpring *s = &springs[i];
+    
     double force_mag;
-    if (s->spring_type == STRUCTURAL && cp->enable_structural_constraints) {
+    if (isSpringActive(s, cp)) {
       force_mag = cp->ks * (norm(s->pm_a->position - s->pm_b->position) - s->rest_length);
-    } else if (s->spring_type == SHEARING && cp->enable_shearing_constraints) {
-      force_mag = cp->ks * (norm(s->pm_a->position - s->pm_b->position) - s->rest_length);
-    } else if (s->spring_type == BENDING && cp->enable_bending_constraints) {
-      force_mag = (0.2 * cp->ks) * (norm(s->pm_a->position - s->pm_b->position) - s->rest_length);
+    } 
+    if (isSpringActive(s, cp) && s->spring_type == BENDING) {
+      force_mag *= 0.2;
     }
     s->pm_b->forces += unit(s->pm_a->position - s->pm_b->position) * force_mag;
     s->pm_a->forces += unit(s->pm_b->position - s->pm_a->position) * force_mag;
@@ -204,22 +180,34 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
     }
   }
 
+  // check if springs have crossed their threshold
+  for (int i = 0; i < springs.size(); i++) {
+    EdgeSpring *s = &springs[i];
+    if (s->fracture_thresh != 0 && norm(s->pm_a->position - s->pm_b->position) > (s->rest_length * s->fracture_thresh)) {
+      break_spring(s);
+    }
+  }
+
+
   // in length more than 10% per timestep [Provot 1995].
   for (int i = 0; i < springs.size(); i++) {
-    Spring *s = &springs[i];
-    if (norm(s->pm_a->position - s->pm_b->position) > (s->rest_length * 1.1)) {
+    EdgeSpring *s = &springs[i];
+    if (s->fractured) {
+      continue;
+    } else if (norm(s->pm_a->position - s->pm_b->position) > (s->rest_length * 1.2)) {
       if (s->pm_a->pinned) {
         // check if correct
-        s->pm_b->position = (unit(s->pm_b->position - s->pm_a->position) * (s->rest_length * 1.1)) + s->pm_a->position;
+        s->pm_b->position = (unit(s->pm_b->position - s->pm_a->position) * (s->rest_length * 1.2)) + s->pm_a->position;
       } else if (s->pm_b->pinned) {
-        s->pm_a->position = (unit(s->pm_a->position - s->pm_b->position) * (s->rest_length * 1.1)) + s->pm_b->position;
+        s->pm_a->position = (unit(s->pm_a->position - s->pm_b->position) * (s->rest_length * 1.2)) + s->pm_b->position;
       } else {
         Vector3D mid = ((s->pm_a->position - s->pm_b->position) / 2) + s->pm_b->position;
-        s->pm_a->position = unit(s->pm_a->position - mid) * ((s->rest_length * 1.1) / 2.) + mid;
-        s->pm_b->position = unit(s->pm_b->position - mid) * ((s->rest_length * 1.1) / 2.) + mid;
+        s->pm_a->position = unit(s->pm_a->position - mid) * ((s->rest_length * 1.2) / 2.) + mid;
+        s->pm_b->position = unit(s->pm_b->position - mid) * ((s->rest_length * 1.2) / 2.) + mid;
       }
     }
   }
+
 }
 
 void Cloth::build_spatial_map() {
@@ -287,16 +275,16 @@ float Cloth::hash_position(Vector3D pos) {
   return uid; 
 }
 
-///////////////////////////////////////////////////////
-/// YOU DO NOT NEED TO REFER TO ANY CODE BELOW THIS ///
-///////////////////////////////////////////////////////
-
 void Cloth::reset() {
   PointMass *pm = &point_masses[0];
   for (int i = 0; i < point_masses.size(); i++) {
     pm->position = pm->start_position;
     pm->last_position = pm->start_position;
     pm++;
+  }
+
+  for (int i = 0; i < springs.size(); i++) {
+    springs[i].fractured = false;
   }
 }
 
@@ -363,9 +351,9 @@ void Cloth::buildClothMesh() {
     Halfedge *h3 = new Halfedge();
 
     // Allocate new edges on heap
-    Edge *e1 = new Edge();
-    Edge *e2 = new Edge();
-    Edge *e3 = new Edge();
+    EdgeSpring *e1 = new EdgeSpring();
+    EdgeSpring *e2 = new EdgeSpring();
+    EdgeSpring *e3 = new EdgeSpring();
 
     // Assign a halfedge pointer to the triangle
     t->halfedge = h1;
@@ -390,8 +378,25 @@ void Cloth::buildClothMesh() {
     h3->next = h1;
     h3->pm = t->pm3;
     h3->triangle = t;
-  }
 
+    // Update all edgespring pointers
+    e1->pm_a = t->pm1;
+    e1->pm_b = t->pm2;
+    e1->rest_length = (e1->pm_a->position - e1->pm_b->position).norm();
+    
+    e2->pm_a = t->pm2;
+    e2->pm_b = t->pm3;
+    e2->rest_length = (e2->pm_a->position - e2->pm_b->position).norm();
+
+    e3->pm_a = t->pm3;
+    e3->pm_b = t->pm1;
+    e3->rest_length = (e3->pm_a->position - e3->pm_b->position).norm();
+
+    // Add edge springs to springs list
+    springs.emplace_back(*e1);
+    springs.emplace_back(*e2);
+    springs.emplace_back(*e3);
+  }
   // Go back through the cloth mesh and link triangles together using halfedge
   // twin pointers
 
@@ -450,4 +455,31 @@ void Cloth::buildClothMesh() {
 
   clothMesh->triangles = triangles;
   this->clothMesh = clothMesh;
+  
+  setFractureThreshold();
+}
+
+double Cloth::getRandomFractureThresh(double min, double max) {
+  return min + (rand() / (RAND_MAX / (max - min)));
+}
+
+void Cloth::setFractureThreshold() {
+  double min = 1.2;
+  double max = 1.8; 
+  for (int i = 0; i < springs.size(); i++) {
+    // Add random fracture threshold values to all springs
+    EdgeSpring *s = &springs[i];
+    s->fracture_thresh = getRandomFractureThresh(min, max);
+  }
+
+}
+
+void Cloth::break_spring(EdgeSpring *s) {
+  s->fractured = true;
+
+  // Split the triangle mesh to account for fracture
+  Halfedge *h1 = s->pm_a->halfedge;
+  Halfedge *h2 = s->pm_b->halfedge;
+
+  return;
 }

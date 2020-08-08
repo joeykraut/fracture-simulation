@@ -5,6 +5,7 @@
 
 #include "CGL/CGL.h"
 #include "pointMass.h"
+#include "edgeSpring.h"
 
 using namespace CGL;
 using namespace std;
@@ -29,14 +30,9 @@ public:
   Halfedge *halfedge;
 }; // struct Triangle
 
-class Edge {
-public:
-  Halfedge *halfedge;
-}; // struct Edge
-
 class Halfedge {
 public:
-  Edge *edge;
+  EdgeSpring *edge;
   Halfedge *next;
   Halfedge *twin;
   Triangle *triangle;

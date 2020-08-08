@@ -337,11 +337,12 @@ void ClothSimulator::drawWireframe(GLShader &shader) {
   int si = 0;
 
   for (int i = 0; i < cloth->springs.size(); i++) {
-    Spring s = cloth->springs[i];
+    EdgeSpring s = cloth->springs[i];
 
     if ((s.spring_type == STRUCTURAL && !cp->enable_structural_constraints) ||
         (s.spring_type == SHEARING && !cp->enable_shearing_constraints) ||
-        (s.spring_type == BENDING && !cp->enable_bending_constraints)) {
+        (s.spring_type == BENDING && !cp->enable_bending_constraints) ||
+        (s.fractured == true)) {
       continue;
     }
 

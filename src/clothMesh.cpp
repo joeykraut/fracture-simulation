@@ -1,4 +1,6 @@
 #include "clothMesh.h"
+#include "edgeSpring.h"
+
 #include <iostream>
 
 using namespace CGL;
