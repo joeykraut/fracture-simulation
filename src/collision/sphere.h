@@ -24,7 +24,7 @@ public:
     void set_pinned(bool);
     void zero_forces();
     void update_moments(double);
-    void simulate(double, Vector3D);
+    void simulate(double, Vector3D, vector<CollisionObject *> *);
 
 private:
     Vector3D origin;
@@ -42,6 +42,8 @@ private:
     double mass = 100;
     const double gravity_multiplier = 1000;
 
+    // Checking for collisions
+    void check_plane_collision(vector<CollisionObject *> *);
 
     Misc::SphereMesh m_sphere_mesh;
 };

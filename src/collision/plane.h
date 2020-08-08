@@ -17,7 +17,7 @@ public:
 
   void render(GLShader &shader);
   void collide(PointMass &pm);
-  void simulate(double, Vector3D);
+  void simulate(double, Vector3D, vector<CollisionObject *> *);
   void zero_forces() {
       return;
   }

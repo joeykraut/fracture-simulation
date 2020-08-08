@@ -10,6 +10,7 @@
 #include "clothMesh.h"
 #include "collision/collisionObject.h"
 #include "spring.h"
+#include "collision/plane.h"
 
 using namespace CGL;
 using namespace std;

@@ -156,7 +156,7 @@ void incompleteObjectError(const char *object, const char *attribute) {
   exit(-1);
 }
 
-bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vector<CollisionObject *>* objects, int sphere_num_lat, int sphere_num_lon) {
+bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vector<CollisionObject *>* objects, vector<Plane *>* planes, int sphere_num_lat, int sphere_num_lon) {
   // Read JSON from file
   ifstream i(filename);
   if (!i.good()) {
@@ -356,6 +356,7 @@ bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
 
       Plane *p = new Plane(point, normal, friction);
       objects->push_back(p);
+      planes->push_back(p);
     }
   }
 
@@ -399,6 +400,7 @@ int main(int argc, char **argv) {
   Cloth cloth;
   ClothParameters cp;
   vector<CollisionObject *> objects;
+  vector<Plane *> planes;
   
   int c;
   
@@ -460,7 +462,7 @@ int main(int argc, char **argv) {
     file_to_load_from = def_fname.str();
   }
   
-  bool success = loadObjectsFromFile(file_to_load_from, &cloth, &cp, &objects, sphere_num_lat, sphere_num_lon);
+  bool success = loadObjectsFromFile(file_to_load_from, &cloth, &cp, &objects, &planes, sphere_num_lat, sphere_num_lon);
   if (!success) {
     std::cout << "Warn: Unable to load from file: " << file_to_load_from << std::endl;
   }
@@ -478,6 +480,7 @@ int main(int argc, char **argv) {
   app->loadCloth(&cloth);
   app->loadClothParameters(&cp);
   app->loadCollisionObjects(&objects);
+  app->setPlanes(&planes);
   app->init();
 
   // Call this after all the widgets have been defined

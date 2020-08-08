@@ -186,6 +186,10 @@ void ClothSimulator::loadClothParameters(ClothParameters *cp) { this->cp = cp; }
 
 void ClothSimulator::loadCollisionObjects(vector<CollisionObject *> *objects) { this->collision_objects = objects; }
 
+void ClothSimulator::setPlanes(vector<Plane *> *planes) {
+    this->planes = planes;
+}
+
 /**
  * Initializes the cloth simulation and spawns a new thread to separate
  * rendering from simulation.
@@ -249,13 +253,12 @@ void ClothSimulator::drawContents() {
 
       // Update all the positions of the collision objects
       for (int i = 0; i < collision_objects->size(); i++) {
-          collision_objects->at(i)->simulate(1.0f / frames_per_sec / simulation_steps, gravity);
+          collision_objects->at(i)->simulate(1.0f / frames_per_sec / simulation_steps, gravity, collision_objects);
       }
     }
   }
 
   // Bind the active shader
-
   const UserShader& active_shader = shaders[active_shader_idx];
 
   GLShader &shader = *active_shader.nanogui_shader;

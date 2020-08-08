@@ -3,6 +3,7 @@
 #include "../clothMesh.h"
 #include "../misc/sphere_drawing.h"
 #include "sphere.h"
+#include "plane.h"
 
 using namespace nanogui;
 using namespace CGL;
@@ -51,7 +52,7 @@ void Sphere::zero_forces() {
     this->forces = Vector3D(0);
 }
 
-void Sphere::simulate(double delta_t, Vector3D gravity_vec) {
+void Sphere::simulate(double delta_t, Vector3D gravity_vec, vector<CollisionObject *> *objects) {
     // Add forces
     // Add gravity
     forces += gravity_vec * mass;
@@ -59,8 +60,15 @@ void Sphere::simulate(double delta_t, Vector3D gravity_vec) {
     // Multiply the forces by an amplifier constant
     forces *= FORCE_MULTIPLIER;
 
-    // Update position
+    // Update position and velocity
     update_moments(delta_t);
+    for (auto object : *objects) {
+        if (object == this) {
+            continue;
+        }
+
+        // Otherwise it's a plane, collide
+    }
 }
 
 void Sphere::update_moments(double delta_t) {
@@ -73,5 +81,3 @@ void Sphere::update_moments(double delta_t) {
     velocity = DAMPING_COEFF * velocity + pow(delta_t, 2) * forces / mass;
     origin = origin + delta_t * velocity;
 }
-
-
