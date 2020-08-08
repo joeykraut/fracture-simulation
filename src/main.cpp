@@ -326,6 +326,8 @@ bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
       }
 
       Sphere *s = new Sphere(origin, radius, friction, sphere_num_lat, sphere_num_lon);
+      s->set_initial_position(origin);
+      
       objects->push_back(s);
     } else { // PLANE
       Vector3D point, normal;

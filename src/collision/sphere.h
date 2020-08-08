@@ -25,6 +25,8 @@ public:
     void zero_forces();
     void update_moments(double);
     void simulate(double, Vector3D, vector<CollisionObject *> *);
+    void set_initial_position(Vector3D);
+    void reset();
 
 private:
     Vector3D origin;
@@ -33,6 +35,8 @@ private:
 
     double friction;
 
+    // The initial position for resets
+    Vector3D initial_position;
     // Sets whether or not the sphere should move
     bool pinned = false;
 

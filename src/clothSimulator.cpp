@@ -586,6 +586,9 @@ bool ClothSimulator::keyCallbackEvent(int key, int scancode, int action,
     case 'r':
     case 'R':
       cloth->reset();
+      for (auto obj : *collision_objects) {
+          obj->reset();
+      }
       break;
     case ' ':
       resetCamera();

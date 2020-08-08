@@ -44,6 +44,10 @@ void Sphere::render(GLShader &shader) {
   m_sphere_mesh.draw_sphere(shader, origin, radius * 0.92);
 }
 
+// ============================== //
+// ====== Setters/Getters ======= //
+// ============================== //
+
 void Sphere::set_pinned(bool pinned) {
     this->pinned = pinned;
 }
@@ -51,6 +55,19 @@ void Sphere::set_pinned(bool pinned) {
 void Sphere::zero_forces() {
     this->forces = Vector3D(0);
 }
+
+void Sphere::set_initial_position(Vector3D position) {
+    initial_position = position;
+}
+
+void Sphere::reset() {
+    origin = initial_position;
+    velocity = Vector3D(0);
+}
+
+// ============================= //
+// ======== Simulation ========= //
+// ============================= //
 
 void Sphere::simulate(double delta_t, Vector3D gravity_vec, vector<CollisionObject *> *objects) {
     // Add forces

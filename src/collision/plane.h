@@ -21,6 +21,9 @@ public:
   void zero_forces() {
       return;
   }
+  void reset() {
+      return;
+  }
 
   Vector3D unit(Vector3D v);
   double norm(Vector3D v);
