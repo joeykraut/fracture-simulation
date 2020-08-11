@@ -5,6 +5,7 @@
 Win32/*
 .vs
 CMakeSettings.json
+.vscode
 
 # Prerequisites
 *.d
