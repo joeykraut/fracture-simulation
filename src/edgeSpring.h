@@ -30,7 +30,7 @@ struct EdgeSpring {
 
   PointMass *pm_a;
   PointMass *pm_b;
-
+  Cube *cube;
   // percentage of rest_length that a spring cannot surpass without breaking
   double fracture_thresh = 0;
   // when a spring is fractured, this is set to True instead of deleting it from the cloth
