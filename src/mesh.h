@@ -46,7 +46,7 @@ public:
   vector<Triangle *> triangles;
 }; // struct ClothMesh
 
-class Cube {
+class SingleCube {
   vector<EdgeSpring> edges;
   vector<Triangle> triangles;
 }; // struct Cube
@@ -54,7 +54,7 @@ class Cube {
 class CubeMesh {
   ~CubeMesh() {}
   // TODO determine if we need cube list
-  vector<Cube *> cubes;
+  vector<SingleCube *> single_cubes;
   vector<Triangle *> triangles;
 }; // struct CubeMesh
 

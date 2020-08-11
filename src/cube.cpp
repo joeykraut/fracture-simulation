@@ -80,17 +80,24 @@ void singleCubePoints(double width, double height, double depth, vector<Vector3D
 void Cube::buildCubeMesh() {
   CubeMesh *cubeMesh = new CubeMesh();
   vector<Triangle *> triangles;
-  vector<Cube *> cubes;
+  vector<SingleCube *> cubes;
 
   // build one cube
+  SingleCube cube = new SingleCube();
+
   double cube_width = width / num_width_points;
   double cube_height = height / num_height_points;
   double cube_depth = depth / num_depth_points;
   // create point masses
   vector<Vector3D> cube_points = singleCubePoints(cube_width, cube_height, cube_depth, cube_points);
   for (Vector3D p: cube_points) {
-    point_masses.emplace_back(p, false);
+    // TODO add pinned logic
+    // TODO is this appropriate to create point mass
+    PointMass p = new PointMass(p, false);
+    point_masses.emplace_back(p);
+
   }
+
 
 
   cubeMesh->triangles = triangles;
