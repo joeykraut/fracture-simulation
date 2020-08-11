@@ -47,8 +47,8 @@ public:
 }; // struct ClothMesh
 
 class SingleCube {
-  vector<EdgeSpring> edges;
-  vector<Triangle> triangles;
+  vector<EdgeSpring *> edges;
+  vector<Triangle *> triangles;
 }; // struct Cube
 
 class CubeMesh {
