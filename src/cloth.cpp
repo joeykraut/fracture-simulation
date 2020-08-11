@@ -90,14 +90,6 @@ void Cloth::buildGrid() {
   }
 }
 
-double Cloth::norm(Vector3D v) {
-  return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-}
-
-Vector3D Cloth::unit(Vector3D v) {
-  return v / norm(v);
-}
-
 bool Cloth::isSpringActive(EdgeSpring *s, ClothParameters *cp) {
   if (s->fractured) {
     return false;
@@ -144,13 +136,13 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
     
     double force_mag;
     if (isSpringActive(s, cp)) {
-      force_mag = cp->ks * (norm(s->pm_a->position - s->pm_b->position) - s->rest_length);
+      force_mag = cp->ks * ((s->pm_a->position - s->pm_b->position).norm() - s->rest_length);
     } 
     if (isSpringActive(s, cp) && s->spring_type == BENDING) {
       force_mag *= 0.2;
     }
-    s->pm_b->forces += unit(s->pm_a->position - s->pm_b->position) * force_mag;
-    s->pm_a->forces += unit(s->pm_b->position - s->pm_a->position) * force_mag;
+    s->pm_b->forces += (s->pm_a->position - s->pm_b->position).unit() * force_mag;
+    s->pm_a->forces += (s->pm_b->position - s->pm_a->position).unit() * force_mag;
   }
   
   // calculate new positions
@@ -183,7 +175,7 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   // check if springs have crossed their threshold
   for (int i = 0; i < springs.size(); i++) {
     EdgeSpring *s = &springs[i];
-    if (s->fracture_thresh != 0 && norm(s->pm_a->position - s->pm_b->position) > (s->rest_length * s->fracture_thresh)) {
+    if (s->fracture_thresh != 0 && (s->pm_a->position - s->pm_b->position).norm() > (s->rest_length * s->fracture_thresh)) {
       break_spring(s);
     }
   }
@@ -194,16 +186,16 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
     EdgeSpring *s = &springs[i];
     if (s->fractured) {
       continue;
-    } else if (norm(s->pm_a->position - s->pm_b->position) > (s->rest_length * 1.2)) {
+    } else if ((s->pm_a->position - s->pm_b->position).norm() > (s->rest_length * 1.2)) {
       if (s->pm_a->pinned) {
         // check if correct
-        s->pm_b->position = (unit(s->pm_b->position - s->pm_a->position) * (s->rest_length * 1.2)) + s->pm_a->position;
+        s->pm_b->position = ((s->pm_b->position - s->pm_a->position).unit() * (s->rest_length * 1.2)) + s->pm_a->position;
       } else if (s->pm_b->pinned) {
-        s->pm_a->position = (unit(s->pm_a->position - s->pm_b->position) * (s->rest_length * 1.2)) + s->pm_b->position;
+        s->pm_a->position = ((s->pm_a->position - s->pm_b->position).unit() * (s->rest_length * 1.2)) + s->pm_b->position;
       } else {
         Vector3D mid = ((s->pm_a->position - s->pm_b->position) / 2) + s->pm_b->position;
-        s->pm_a->position = unit(s->pm_a->position - mid) * ((s->rest_length * 1.2) / 2.) + mid;
-        s->pm_b->position = unit(s->pm_b->position - mid) * ((s->rest_length * 1.2) / 2.) + mid;
+        s->pm_a->position = (s->pm_a->position - mid).unit() * ((s->rest_length * 1.2) / 2.) + mid;
+        s->pm_b->position = (s->pm_b->position - mid).unit() * ((s->rest_length * 1.2) / 2.) + mid;
       }
     }
   }
