@@ -6,7 +6,7 @@
 #define SPRING_COLLISION_RESISTANCE 30000
 #define DAMPING_COEFF 0.999
 
-#include "../clothMesh.h"
+#include "../mesh.h"
 #include "../misc/sphere_drawing.h"
 #include "collisionObject.h"
 

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8)
 set(CLOTHSIM_VIEWER_SOURCE
     # Cloth simulation objects
     cloth.cpp
-    clothMesh.cpp
+    mesh.cpp
 
     # Collision objects
     collision/sphere.cpp

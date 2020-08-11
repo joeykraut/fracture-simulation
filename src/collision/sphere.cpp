@@ -1,6 +1,6 @@
 #include <nanogui/nanogui.h>
 
-#include "../clothMesh.h"
+#include "../mesh.h"
 #include "../misc/sphere_drawing.h"
 #include "sphere.h"
 #include "plane.h"

@@ -1,5 +1,5 @@
-#ifndef CLOTH_MESH_H
-#define CLOTH_MESH_H
+#ifndef MESH_H
+#define MESH_H
 
 #include <vector>
 
@@ -45,5 +45,17 @@ public:
 
   vector<Triangle *> triangles;
 }; // struct ClothMesh
+
+class Cube {
+  vector<EdgeSpring> edges;
+  vector<Triangle> triangles;
+}; // struct Cube
+
+class CubeMesh {
+  ~CubeMesh() {}
+  // TODO determine if we need cube list
+  vector<Cube *> cubes;
+  vector<Triangle *> triangles;
+}; // struct CubeMesh
 
 #endif // CLOTH_MESH_H

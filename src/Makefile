@@ -245,32 +245,32 @@ cloth.cpp.s:
 	cd /Users/joey/classes/cs184/final && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/clothsim.dir/build.make src/CMakeFiles/clothsim.dir/cloth.cpp.s
 .PHONY : cloth.cpp.s
 
-clothMesh.o: clothMesh.cpp.o
+mesh.o: mesh.cpp.o
 
-.PHONY : clothMesh.o
+.PHONY : mesh.o
 
 # target to build an object file
-clothMesh.cpp.o:
-	cd /Users/joey/classes/cs184/final && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/clothsim.dir/build.make src/CMakeFiles/clothsim.dir/clothMesh.cpp.o
-.PHONY : clothMesh.cpp.o
+mesh.cpp.o:
+	cd /Users/joey/classes/cs184/final && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/clothsim.dir/build.make src/CMakeFiles/clothsim.dir/mesh.cpp.o
+.PHONY : mesh.cpp.o
 
-clothMesh.i: clothMesh.cpp.i
+mesh.i: mesh.cpp.i
 
-.PHONY : clothMesh.i
+.PHONY : mesh.i
 
 # target to preprocess a source file
-clothMesh.cpp.i:
-	cd /Users/joey/classes/cs184/final && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/clothsim.dir/build.make src/CMakeFiles/clothsim.dir/clothMesh.cpp.i
-.PHONY : clothMesh.cpp.i
+mesh.cpp.i:
+	cd /Users/joey/classes/cs184/final && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/clothsim.dir/build.make src/CMakeFiles/clothsim.dir/mesh.cpp.i
+.PHONY : mesh.cpp.i
 
-clothMesh.s: clothMesh.cpp.s
+mesh.s: mesh.cpp.s
 
-.PHONY : clothMesh.s
+.PHONY : mesh.s
 
 # target to generate assembly for a file
-clothMesh.cpp.s:
-	cd /Users/joey/classes/cs184/final && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/clothsim.dir/build.make src/CMakeFiles/clothsim.dir/clothMesh.cpp.s
-.PHONY : clothMesh.cpp.s
+mesh.cpp.s:
+	cd /Users/joey/classes/cs184/final && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/clothsim.dir/build.make src/CMakeFiles/clothsim.dir/mesh.cpp.s
+.PHONY : mesh.cpp.s
 
 clothSimulator.o: clothSimulator.cpp.o
 
@@ -453,9 +453,9 @@ help:
 	@echo "... cloth.o"
 	@echo "... cloth.i"
 	@echo "... cloth.s"
-	@echo "... clothMesh.o"
-	@echo "... clothMesh.i"
-	@echo "... clothMesh.s"
+	@echo "... mesh.o"
+	@echo "... mesh.i"
+	@echo "... mesh.s"
 	@echo "... clothSimulator.o"
 	@echo "... clothSimulator.i"
 	@echo "... clothSimulator.s"

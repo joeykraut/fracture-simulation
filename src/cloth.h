@@ -7,7 +7,7 @@
 
 #include "CGL/CGL.h"
 #include "CGL/misc.h"
-#include "clothMesh.h"
+#include "mesh.h"
 #include "collision/collisionObject.h"
 #include "collision/plane.h"
 #include "edgeSpring.h"

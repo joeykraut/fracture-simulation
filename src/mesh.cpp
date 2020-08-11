@@ -1,4 +1,4 @@
-#include "clothMesh.h"
+#include "mesh.h"
 #include "edgeSpring.h"
 
 #include <iostream>
