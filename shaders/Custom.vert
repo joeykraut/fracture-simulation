@@ -13,6 +13,7 @@ in vec4 in_position;
 in vec4 in_normal;
 in vec4 in_tangent;
 in vec2 in_uv;
+in float in_mask;
 
 // In a vertex shader, the "out" variables are per-vertex properties
 // that are read/write. These properties allow us to communicate
@@ -23,6 +24,7 @@ out vec4 v_position;
 out vec4 v_normal;
 out vec2 v_uv;
 out vec4 v_tangent;
+out float v_mask;
 
 // Every shader features a "main" function.
 // This is typically where we write to the "out" variables that the
@@ -37,7 +39,7 @@ void main() {
   v_normal = normalize(u_model * in_normal);
   v_uv = in_uv;
   v_tangent = normalize(u_model * in_tangent);
-  
+  v_mask = in_mask;
   // The final screen-space location of this vertex which the
   // GPU's triangle rasterizer takes in.
   gl_Position = u_view_projection * u_model * in_position;
