@@ -29,6 +29,9 @@ public:
   Vector3D uv2;
   Vector3D uv3;
 
+  // Tag for ignoring the triangle in the shaders
+  bool fractured = false;
+
   Halfedge *halfedge;
 }; // struct Triangle
 

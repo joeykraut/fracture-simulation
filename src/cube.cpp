@@ -187,6 +187,7 @@ void Cube::simulate(double frames_per_sec, double simulation_steps, CubeParamete
   for (int i = 0; i < springs.size(); i++) {
     EdgeSpring *s = &springs[i];
     if (s->fractured) {
+      // ignore if spring is fractured
       continue;
     } else if ((s->pm_a->position - s->pm_b->position).norm() > (s->rest_length * 1.2)) {
       if (s->pm_a->pinned) {
@@ -279,7 +280,6 @@ void Cube::reset() {
 }
 
 // Fracture logic
-// TODO all of this @joey
 double Cube::getRandomFractureThresh(double min, double max) {
   return min + (rand() / (RAND_MAX / (max - min)));
 }
@@ -297,10 +297,16 @@ void Cube::setFractureThreshold() {
 
 void Cube::break_spring(EdgeSpring *s) {
   s->fractured = true;
+  
+  // fracture all springs in cube
+  for (auto edge: s->single_cube->edges) {
+    edge->fractured = true;
+  }
 
-  // Split the triangle mesh to account for fracture
-  Halfedge *h1 = s->pm_a->halfedge;
-  Halfedge *h2 = s->pm_b->halfedge;
+  // mark all triangles as fractured for the shader
+  for (auto tri: s->single_cube->triangles) {
+    tri->fractured = true;
+  }
 
   return;
 }
