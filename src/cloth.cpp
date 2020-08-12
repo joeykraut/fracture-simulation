@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "cloth.h"
-#include "edgeSpring.h"
+#include "mesh.h"
 #include "collision/plane.h"
 #include "collision/sphere.h"
 

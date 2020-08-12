@@ -38,7 +38,7 @@ private:
     // The initial position for resets
     Vector3D initial_position;
     // Sets whether or not the sphere should move
-    bool pinned = true;
+    bool pinned = false;
 
     // The velocity of the sphere and forces acting on it
     Vector3D velocity = Vector3D(0.0, 0.0, 0.0);

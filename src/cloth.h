@@ -10,7 +10,7 @@
 #include "mesh.h"
 #include "collision/collisionObject.h"
 #include "collision/plane.h"
-#include "edgeSpring.h"
+#include "mesh.h"
 
 using namespace CGL;
 using namespace std;

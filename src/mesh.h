@@ -5,10 +5,12 @@
 
 #include "CGL/CGL.h"
 #include "pointMass.h"
-#include "edgeSpring.h"
 
 using namespace CGL;
 using namespace std;
+
+// Forward declaration of edgeSpring
+struct EdgeSpring;
 
 class Triangle {
 public:
@@ -57,5 +59,34 @@ class CubeMesh {
   vector<SingleCube *> single_cubes;
   vector<Triangle *> triangles;
 }; // struct CubeMesh
+
+enum e_spring_type { STRUCTURAL = 0, SHEARING = 1, BENDING = 2 };
+
+struct EdgeSpring {
+    EdgeSpring(PointMass *a, PointMass *b, e_spring_type spring_type)
+            : pm_a(a), pm_b(b), spring_type(spring_type) {
+        rest_length = (pm_a->position - pm_b->position).norm();
+    }
+
+    EdgeSpring(PointMass *a, PointMass *b, double rest_length)
+            : pm_a(a), pm_b(b), rest_length(rest_length) {
+    }
+
+    EdgeSpring() {}
+
+    double rest_length;
+
+    e_spring_type spring_type = STRUCTURAL;
+
+    PointMass *pm_a;
+    PointMass *pm_b;
+    SingleCube *single_cube;
+
+    // percentage of rest_length that a spring cannot surpass without breaking
+    double fracture_thresh = 0;
+    // when a spring is fractured, this is set to True instead of deleting it from the cloth
+    bool fractured = false;
+
+}; // struct EdgeSpring
 
 #endif // CLOTH_MESH_H
