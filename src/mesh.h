@@ -49,7 +49,7 @@ public:
 class SingleCube {
   vector<EdgeSpring *> edges;
   vector<Triangle *> triangles;
-}; // struct Cube
+}; // struct SingleCube
 
 class CubeMesh {
   ~CubeMesh() {}

@@ -80,7 +80,7 @@ void singleCubePoints(double width, double height, double depth, vector<Vector3D
 void Cube::buildCubeMesh() {
   CubeMesh *cubeMesh = new CubeMesh();
   vector<Triangle *> triangles;
-  vector<SingleCube *> cubes;
+  vector<SingleCube *> single_cubes;
 
   // build one cube
   SingleCube cube = new SingleCube();
@@ -95,8 +95,10 @@ void Cube::buildCubeMesh() {
     // TODO is this appropriate to create point mass
     PointMass p = new PointMass(p, false);
     point_masses.emplace_back(p);
-
+    single_cubes.emplace_back(*p);
   }
+
+  // what to do for overlapping edges aka edge in middle
 
 
 
