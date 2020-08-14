@@ -8,7 +8,11 @@
 #include "collision/plane.h"
 #include "collision/sphere.h"
 
-#define SHARDS 20
+// Tolerances
+#define TOL_MIN 1.1
+#define TOL_MAX 1.3
+
+#define SHARDS 50
 #define SHARDED true
 
 using namespace std;
@@ -514,8 +518,8 @@ double Cloth::getRandomFractureThresh(double min, double max) {
 }
 
 void Cloth::setFractureThreshold() {
-  double min = 1.1;
-  double max = 1.3;
+  double min = TOL_MIN;
+  double max = TOL_MAX;
   for (int i = 0; i < springs.size(); i++) {
     // Add random fracture threshold values to all springs
     EdgeSpring *s = &springs[i];

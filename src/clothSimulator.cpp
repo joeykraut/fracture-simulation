@@ -434,6 +434,7 @@ void ClothSimulator::drawNormals(GLShader &shader) {
 
   MatrixXf positions(4, num_tris * 3);
   MatrixXf normals(4, num_tris * 3);
+  MatrixXf masks(1, num_tris * 3);
 
   for (int i = 0; i < num_tris; i++) {
     Triangle *tri = cloth->clothMesh->triangles[i];
@@ -453,10 +454,16 @@ void ClothSimulator::drawNormals(GLShader &shader) {
     normals.col(i * 3) << n1.x, n1.y, n1.z, 0.0;
     normals.col(i * 3 + 1) << n2.x, n2.y, n2.z, 0.0;
     normals.col(i * 3 + 2) << n3.x, n3.y, n3.z, 0.0;
+
+    bool fractured = tri->pm1->fractured || tri->pm2->fractured || tri->pm3->fractured;
+    masks.col(i * 3    ) << float(int(!fractured));
+    masks.col(i * 3 + 1) << float(int(!fractured));
+    masks.col(i * 3 + 2) << float(int(!fractured));
   }
 
   shader.uploadAttrib("in_position", positions, false);
   shader.uploadAttrib("in_normal", normals, false);
+  shader.uploadAttrib("in_mask", masks, false);
 
   shader.drawArray(GL_TRIANGLES, 0, num_tris * 3);
 }

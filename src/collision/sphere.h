@@ -3,7 +3,7 @@
 
 // Increases forces applied to a sphere to speed up slow motion through scene
 #define FORCE_MULTIPLIER 1000
-#define SPRING_COLLISION_RESISTANCE 30000
+#define SPRING_COLLISION_RESISTANCE 300
 #define DAMPING_COEFF 0.999
 
 #include "../mesh.h"
