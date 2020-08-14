@@ -17,6 +17,7 @@
 #include "collision/sphere.h"
 #include "cloth.h"
 #include "clothSimulator.h"
+#include "cube.h"
 #include "json.hpp"
 #include "misc/file_utils.h"
 
@@ -32,8 +33,9 @@ using json = nlohmann::json;
 const string SPHERE = "sphere";
 const string PLANE = "plane";
 const string CLOTH = "cloth";
+const string LATTICE = "cubeLattice";
 
-const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, CLOTH};
+const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, CLOTH, LATTICE};
 
 ClothSimulator *app = nullptr;
 GLFWwindow *window = nullptr;
@@ -156,7 +158,8 @@ void incompleteObjectError(const char *object, const char *attribute) {
   exit(-1);
 }
 
-bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vector<CollisionObject *>* objects, vector<Plane *>* planes, int sphere_num_lat, int sphere_num_lon) {
+bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vector<CollisionObject *>* objects,
+                            vector<Plane *>* planes, vector<Cube *> *cubes, int sphere_num_lat, int sphere_num_lon) {
   // Read JSON from file
   ifstream i(filename);
   if (!i.good()) {
@@ -329,7 +332,7 @@ bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
       s->set_initial_position(origin);
       
       objects->push_back(s);
-    } else { // PLANE
+    } else if (key == PLANE) { // PLANE
       Vector3D point, normal;
       double friction;
 
@@ -359,6 +362,27 @@ bool loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
       Plane *p = new Plane(point, normal, friction);
       objects->push_back(p);
       planes->push_back(p);
+    } else {
+        // Cube lattice
+        Vector3D center;
+        int width, height, depth;
+
+        // Parse the center of the lattice
+        auto it_center = object.find("center");
+        if (it_center != object.end()) {
+            vector<double> center_vec = *it_center;
+            center = Vector3D(center_vec[0], center_vec[1], center_vec[2]);
+        } else {
+            incompleteObjectError("plane", "friction");
+        }
+
+        // Parse the width, height and depth of the lattice
+        width = *object.find("width");
+        height = *object.find("height");
+        depth = *object.find("depth");
+
+        Cube *cube = new Cube(center, width, height, depth);
+        cubes->push_back(cube);
     }
   }
 
@@ -403,6 +427,7 @@ int main(int argc, char **argv) {
   ClothParameters cp;
   vector<CollisionObject *> objects;
   vector<Plane *> planes;
+  vector<Cube *> cubes;
   
   int c;
   
@@ -464,7 +489,7 @@ int main(int argc, char **argv) {
     file_to_load_from = def_fname.str();
   }
   
-  bool success = loadObjectsFromFile(file_to_load_from, &cloth, &cp, &objects, &planes, sphere_num_lat, sphere_num_lon);
+  bool success = loadObjectsFromFile(file_to_load_from, &cloth, &cp, &objects, &planes, &cubes, sphere_num_lat, sphere_num_lon);
   if (!success) {
     std::cout << "Warn: Unable to load from file: " << file_to_load_from << std::endl;
   }
@@ -483,6 +508,8 @@ int main(int argc, char **argv) {
   app->loadClothParameters(&cp);
   app->loadCollisionObjects(&objects);
   app->setPlanes(&planes);
+  app->setCubes(&cubes);
+
   app->init();
 
   // Call this after all the widgets have been defined

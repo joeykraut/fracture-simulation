@@ -52,15 +52,22 @@ public:
 }; // struct ClothMesh
 
 class SingleCube {
-  vector<EdgeSpring *> edges;
+public:
+
+    SingleCube(vector<Triangle *> triangles, vector<EdgeSpring> edges)
+        : edges(edges), triangles(std::move(triangles)) {}
+
+  vector<EdgeSpring> edges;
   vector<Triangle *> triangles;
 }; // struct SingleCube
 
 class CubeMesh {
+public:
   ~CubeMesh() {}
-  // TODO determine if we need cube list
+  CubeMesh(vector<SingleCube *> single_cubes)
+    : single_cubes(std::move(single_cubes)) {};
+
   vector<SingleCube *> single_cubes;
-  vector<Triangle *> triangles;
 }; // struct CubeMesh
 
 enum e_spring_type { STRUCTURAL = 0, SHEARING = 1, BENDING = 2 };

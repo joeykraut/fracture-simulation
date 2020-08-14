@@ -1,21 +1,20 @@
 #ifndef CUBE_H
 #define CUBE_H
 
+#define CUBE_DIM 50
+
 #include <unordered_set>
 #include <unordered_map>
 #include <vector>
 
 #include "CGL/CGL.h"
 #include "CGL/misc.h"
-#include "cubeMesh.h"
 #include "collision/collisionObject.h"
 #include "collision/plane.h"
 #include "mesh.h"
 
 using namespace CGL;
 using namespace std;
-
-enum e_orientation { HORIZONTAL = 0, VERTICAL = 1 };
 
 struct CubeParameters {
   CubeParameters() {}
@@ -43,9 +42,8 @@ struct CubeParameters {
 };
 
 struct Cube {
-  Cube() {}
-  Cube(double width, double height, int num_width_points,
-        int num_height_points, float thickness);
+public:
+  Cube(Vector3D center, double width, double height, double depth);
   ~Cube();
 
   void simulate(double frames_per_sec, double simulation_steps, CubeParameters *cp,
@@ -53,7 +51,6 @@ struct Cube {
                 vector<CollisionObject *> *collision_objects);
 
   void reset();
-  void buildCubeMesh();
 
   void build_spatial_map();
   void self_collide(PointMass &pm, double simulation_steps);
@@ -64,21 +61,24 @@ struct Cube {
   void break_spring(EdgeSpring *s);
   
   // Cube properties
-  double width;
-  double height;
-  double depth;
-  int num_width_points;
-  int num_height_points;
-  int num_depth_points;
-  double thickness;
-  e_orientation orientation;
+  double width{};
+  double height{};
+  double depth{};
+  int num_width_points{};
+  int num_height_points{};
+  int num_depth_points{};
+  double thickness{};
+  Vector3D center;
 
   // Cube components
   vector<PointMass> point_masses;
   vector<vector<int>> pinned;
   vector<EdgeSpring> springs;
-  CubeMesh *clothMesh;
-  Halfedge *halfedge;
+  CubeMesh *cubeMesh{};
+  Halfedge *halfedge{};
+
+private:
+  void buildCubeMesh();
 
   // Spatial hashing
   unordered_map<float, vector<PointMass *> *> map;

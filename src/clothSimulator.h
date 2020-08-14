@@ -8,6 +8,7 @@
 #include "cloth.h"
 #include "collision/collisionObject.h"
 #include "collision/plane.h"
+#include "cube.h"
 
 using namespace nanogui;
 
@@ -25,6 +26,7 @@ public:
   void loadClothParameters(ClothParameters *cp);
   void loadCollisionObjects(vector<CollisionObject *> *objects);
   void setPlanes(vector<Plane *> *planes);
+  void setCubes(vector<Cube *> *cubes);
   virtual bool isAlive();
   virtual void drawContents();
 
@@ -69,6 +71,7 @@ private:
   ClothParameters *cp;
   vector<CollisionObject *> *collision_objects;
   vector<Plane *> *planes;
+  vector<Cube *> *cubes;
 
   // OpenGL attributes
 
@@ -151,6 +154,12 @@ struct UserShader {
   std::string display_name;
   ShaderTypeHint type_hint;
   
+};
+
+struct PointMassHash {
+    std::size_t operator()(const PointMass& pm) const {
+        return std::hash<float>()(pm.position.x) + std::hash<float>()(pm.position.y) + std::hash<float>()(pm.position.z);
+    }
 };
 
 #endif // CGL_CLOTH_SIM_H

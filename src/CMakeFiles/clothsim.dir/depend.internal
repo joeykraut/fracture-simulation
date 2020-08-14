@@ -15,13 +15,12 @@ src/CMakeFiles/clothsim.dir/camera.cpp.o
 src/CMakeFiles/clothsim.dir/cloth.cpp.o
  /Users/joey/classes/cs184/final/src/cloth.cpp
  /Users/joey/classes/cs184/final/src/cloth.h
- /Users/joey/classes/cs184/final/src/clothMesh.h
  /Users/joey/classes/cs184/final/src/collision/collisionObject.h
  /Users/joey/classes/cs184/final/src/collision/plane.h
  /Users/joey/classes/cs184/final/src/collision/sphere.h
+ /Users/joey/classes/cs184/final/src/mesh.h
  /Users/joey/classes/cs184/final/src/misc/sphere_drawing.h
  /Users/joey/classes/cs184/final/src/pointMass.h
- /Users/joey/classes/cs184/final/src/spring.h
  CGL/include/CGL/CGL.h
  CGL/include/CGL/misc.h
  CGL/include/CGL/vector3D.h
@@ -253,29 +252,22 @@ src/CMakeFiles/clothsim.dir/cloth.cpp.o
  ext/nanogui/include/nanogui/vscrollpanel.h
  ext/nanogui/include/nanogui/widget.h
  ext/nanogui/include/nanogui/window.h
-src/CMakeFiles/clothsim.dir/clothMesh.cpp.o
- /Users/joey/classes/cs184/final/src/clothMesh.cpp
- /Users/joey/classes/cs184/final/src/clothMesh.h
- /Users/joey/classes/cs184/final/src/pointMass.h
- CGL/include/CGL/CGL.h
- CGL/include/CGL/misc.h
- CGL/include/CGL/vector3D.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o
  /Users/joey/classes/cs184/final/src/camera.h
  /Users/joey/classes/cs184/final/src/cloth.h
- /Users/joey/classes/cs184/final/src/clothMesh.h
  /Users/joey/classes/cs184/final/src/clothSimulator.cpp
  /Users/joey/classes/cs184/final/src/clothSimulator.h
  /Users/joey/classes/cs184/final/src/collision/collisionObject.h
  /Users/joey/classes/cs184/final/src/collision/plane.h
  /Users/joey/classes/cs184/final/src/collision/sphere.h
+ /Users/joey/classes/cs184/final/src/cube.h
+ /Users/joey/classes/cs184/final/src/mesh.h
  /Users/joey/classes/cs184/final/src/misc/camera_info.h
  /Users/joey/classes/cs184/final/src/misc/collada_info.h
  /Users/joey/classes/cs184/final/src/misc/file_utils.h
  /Users/joey/classes/cs184/final/src/misc/sphere_drawing.h
  /Users/joey/classes/cs184/final/src/misc/stb_image.h
  /Users/joey/classes/cs184/final/src/pointMass.h
- /Users/joey/classes/cs184/final/src/spring.h
  CGL/include/CGL/CGL.h
  CGL/include/CGL/matrix3x3.h
  CGL/include/CGL/matrix4x4.h
@@ -513,15 +505,15 @@ src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o
  /Users/joey/classes/cs184/final/src/camera.h
  /Users/joey/classes/cs184/final/src/cloth.h
- /Users/joey/classes/cs184/final/src/clothMesh.h
  /Users/joey/classes/cs184/final/src/clothSimulator.h
  /Users/joey/classes/cs184/final/src/collision/collisionObject.h
  /Users/joey/classes/cs184/final/src/collision/plane.cpp
  /Users/joey/classes/cs184/final/src/collision/plane.h
+ /Users/joey/classes/cs184/final/src/cube.h
+ /Users/joey/classes/cs184/final/src/mesh.h
  /Users/joey/classes/cs184/final/src/misc/camera_info.h
  /Users/joey/classes/cs184/final/src/misc/collada_info.h
  /Users/joey/classes/cs184/final/src/pointMass.h
- /Users/joey/classes/cs184/final/src/spring.h
  CGL/include/CGL/CGL.h
  CGL/include/CGL/matrix3x3.h
  CGL/include/CGL/matrix4x4.h
@@ -757,10 +749,11 @@ src/CMakeFiles/clothsim.dir/collision/plane.cpp.o
  ext/nanogui/include/nanogui/widget.h
  ext/nanogui/include/nanogui/window.h
 src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o
- /Users/joey/classes/cs184/final/src/clothMesh.h
  /Users/joey/classes/cs184/final/src/collision/collisionObject.h
+ /Users/joey/classes/cs184/final/src/collision/plane.h
  /Users/joey/classes/cs184/final/src/collision/sphere.cpp
  /Users/joey/classes/cs184/final/src/collision/sphere.h
+ /Users/joey/classes/cs184/final/src/mesh.h
  /Users/joey/classes/cs184/final/src/misc/sphere_drawing.h
  /Users/joey/classes/cs184/final/src/pointMass.h
  CGL/include/CGL/CGL.h
@@ -997,20 +990,20 @@ src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o
 src/CMakeFiles/clothsim.dir/main.cpp.o
  /Users/joey/classes/cs184/final/src/camera.h
  /Users/joey/classes/cs184/final/src/cloth.h
- /Users/joey/classes/cs184/final/src/clothMesh.h
  /Users/joey/classes/cs184/final/src/clothSimulator.h
  /Users/joey/classes/cs184/final/src/collision/collisionObject.h
  /Users/joey/classes/cs184/final/src/collision/plane.h
  /Users/joey/classes/cs184/final/src/collision/sphere.h
+ /Users/joey/classes/cs184/final/src/cube.h
  /Users/joey/classes/cs184/final/src/json.hpp
  /Users/joey/classes/cs184/final/src/main.cpp
+ /Users/joey/classes/cs184/final/src/mesh.h
  /Users/joey/classes/cs184/final/src/misc/camera_info.h
  /Users/joey/classes/cs184/final/src/misc/collada_info.h
  /Users/joey/classes/cs184/final/src/misc/file_utils.h
  /Users/joey/classes/cs184/final/src/misc/getopt.h
  /Users/joey/classes/cs184/final/src/misc/sphere_drawing.h
  /Users/joey/classes/cs184/final/src/pointMass.h
- /Users/joey/classes/cs184/final/src/spring.h
  CGL/include/CGL/CGL.h
  CGL/include/CGL/matrix3x3.h
  CGL/include/CGL/matrix4x4.h
@@ -1245,6 +1238,13 @@ src/CMakeFiles/clothsim.dir/main.cpp.o
  ext/nanogui/include/nanogui/vscrollpanel.h
  ext/nanogui/include/nanogui/widget.h
  ext/nanogui/include/nanogui/window.h
+src/CMakeFiles/clothsim.dir/mesh.cpp.o
+ /Users/joey/classes/cs184/final/src/mesh.cpp
+ /Users/joey/classes/cs184/final/src/mesh.h
+ /Users/joey/classes/cs184/final/src/pointMass.h
+ CGL/include/CGL/CGL.h
+ CGL/include/CGL/misc.h
+ CGL/include/CGL/vector3D.h
 src/CMakeFiles/clothsim.dir/misc/file_utils.cpp.o
  /Users/joey/classes/cs184/final/src/misc/dirent.h
  /Users/joey/classes/cs184/final/src/misc/file_utils.cpp

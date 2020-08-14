@@ -20,6 +20,18 @@ struct PointMass {
     return (position - last_position) / delta_t;
   }
 
+  inline bool operator==(PointMass pm_a) {
+      return pm_a.position == position
+                && pm_a.last_position == last_position
+                && pm_a.forces == forces;
+  }
+
+  inline bool operator==(const PointMass pm_a) const {
+      return pm_a.position == position
+                && pm_a.last_position == last_position
+                && pm_a.forces == forces;
+  }
+
   // static values
   bool pinned;
   Vector3D start_position;

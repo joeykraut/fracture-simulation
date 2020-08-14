@@ -6,11 +6,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/joey/classes/cs184/final/src/camera.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/camera.cpp.o"
   "/Users/joey/classes/cs184/final/src/cloth.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/cloth.cpp.o"
-  "/Users/joey/classes/cs184/final/src/clothMesh.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/clothMesh.cpp.o"
   "/Users/joey/classes/cs184/final/src/clothSimulator.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o"
   "/Users/joey/classes/cs184/final/src/collision/plane.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/collision/plane.cpp.o"
   "/Users/joey/classes/cs184/final/src/collision/sphere.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o"
+  "/Users/joey/classes/cs184/final/src/cube.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/cube.cpp.o"
   "/Users/joey/classes/cs184/final/src/main.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/main.cpp.o"
+  "/Users/joey/classes/cs184/final/src/mesh.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/mesh.cpp.o"
   "/Users/joey/classes/cs184/final/src/misc/file_utils.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/misc/file_utils.cpp.o"
   "/Users/joey/classes/cs184/final/src/misc/sphere_drawing.cpp" "/Users/joey/classes/cs184/final/src/CMakeFiles/clothsim.dir/misc/sphere_drawing.cpp.o"
   )

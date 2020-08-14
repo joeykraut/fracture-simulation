@@ -10,30 +10,14 @@
 
 using namespace std;
 
-// TODO do we need thickness
-Cube::Cube(double width, double height, int num_width_points,
-             int num_height_points, float thickness) {
-  this->width = width;
-  this->height = height;
-  this->depth = width;
-  this->num_width_points = num_width_points;
-  this->num_height_points = num_height_points;
-  this->num_depth_points = num_width_points;
-  this->thickness = thickness;
-
-  buildCubeMesh();
-  setFractureThreshold();
-}
-
-Cube::Cube(double width, double height, int num_width_points,
-             int num_height_points, float thickness, float depth, int num_depth_points) {
+// ========================
+// ===== Constructors =====
+// ========================
+Cube::Cube(Vector3D center, double width, double height, double depth) {
   this->width = width;
   this->height = height;
   this->depth = depth;
-  this->num_width_points = num_width_points;
-  this->num_height_points = num_height_points;
-  this->num_depth_points = num_depth_points;
-  this->thickness = thickness;
+  this->center = center;
 
   buildCubeMesh();
   setFractureThreshold();
@@ -48,69 +32,91 @@ Cube::~Cube() {
   }
 }
 
-// Mesh logic
-
-/***
- * Laundry list
- * 
- * populate point_masses list
- * populate springs list
- * populate triangles list
- * populate cubes list
- * 
- * add pointer from edge to cube
- * populate Cube lists
- *    list of triangles
- *    list of edges
- * 
- * connect cubes
- */
-
-void singleCubePoints(double width, double height, double depth, vector<Vector3D> *points) {
-  points->emplace_back(0, 0, 0);
-  points->emplace_back(width, 0, 0);
-  points->emplace_back(width, height, 0);
-  points->emplace_back(width, height, depth);
-  points->emplace_back(0, height, 0);
-  points->emplace_back(0, height, depth);
-  points->emplace_back(0, 0, depth);
-  points->emplace_back(width, 0, depth);
-}
+// =========================
+// ===== Mesh Creation =====
+// =========================
 
 void Cube::buildCubeMesh() {
-  CubeMesh *cubeMesh = new CubeMesh();
-  vector<Triangle *> triangles;
-  vector<SingleCube *> single_cubes;
+    // Create all the point masses
+    PointMass *vertex_a = new PointMass(Vector3D(0.0, 0.0, 0.0), true);
+    PointMass *vertex_b = new PointMass(Vector3D(0.0, 0.0, CUBE_DIM), true);
+    PointMass *vertex_c = new PointMass(Vector3D(0.0, CUBE_DIM, 0.0), true);
+    PointMass *vertex_d = new PointMass(Vector3D(0.0, CUBE_DIM, CUBE_DIM), true);
+    PointMass *vertex_e = new PointMass(Vector3D(CUBE_DIM, 0.0, 0.0), true);
+    PointMass *vertex_f = new PointMass(Vector3D(CUBE_DIM, 0.0, CUBE_DIM), true);
+    PointMass *vertex_g = new PointMass(Vector3D(CUBE_DIM, CUBE_DIM, 0.0), true);
+    PointMass *vertex_h = new PointMass(Vector3D(CUBE_DIM, CUBE_DIM, CUBE_DIM), true);
 
-  // build one cube
-  SingleCube cube = new SingleCube();
+    // Dummy uv coords
+    Vector3D uv(0, 0, 0);
 
-  double cube_width = width / num_width_points;
-  double cube_height = height / num_height_points;
-  double cube_depth = depth / num_depth_points;
-  // create point masses
-  vector<Vector3D> cube_points = singleCubePoints(cube_width, cube_height, cube_depth, cube_points);
-  for (Vector3D p: cube_points) {
-    // TODO add pinned logic
-    // TODO is this appropriate to create point mass
-    PointMass p = new PointMass(p, false);
-    point_masses.emplace_back(p);
-    single_cubes.emplace_back(*p);
-  }
+    // Add the structural constraints
+    vector<EdgeSpring> springs;
+    springs.emplace_back(vertex_a, vertex_b, STRUCTURAL);
+    springs.emplace_back(vertex_b, vertex_d, STRUCTURAL);
+    springs.emplace_back(vertex_d, vertex_c, STRUCTURAL);
+    springs.emplace_back(vertex_c, vertex_a, STRUCTURAL);
 
-  // what to do for overlapping edges aka edge in middle
+    springs.emplace_back(vertex_a, vertex_e, STRUCTURAL);
+    springs.emplace_back(vertex_b, vertex_f, STRUCTURAL);
+    springs.emplace_back(vertex_c, vertex_g, STRUCTURAL);
+    springs.emplace_back(vertex_d, vertex_h, STRUCTURAL);
 
+    springs.emplace_back(vertex_e, vertex_f, STRUCTURAL);
+    springs.emplace_back(vertex_f, vertex_h, STRUCTURAL);
+    springs.emplace_back(vertex_h, vertex_g, STRUCTURAL);
+    springs.emplace_back(vertex_g, vertex_e, STRUCTURAL);
 
+    // Add the face constraints
+    springs.emplace_back(vertex_a, vertex_g, BENDING);
+    springs.emplace_back(vertex_a, vertex_d, BENDING);
+    springs.emplace_back(vertex_b, vertex_h, BENDING);
+    springs.emplace_back(vertex_h, vertex_e, BENDING);
+    springs.emplace_back(vertex_a, vertex_f, BENDING);
+    springs.emplace_back(vertex_c, vertex_h, BENDING);
 
-  cubeMesh->triangles = triangles;
-  cubeMesh->cubes = cubes;
-  this->cubeMesh = cubeMesh;
+    // Build the triangles
+    vector<Triangle *> triangles;
+
+    // Face: ABCD
+    triangles.push_back(new Triangle(vertex_a, vertex_b, vertex_d, uv, uv, uv));
+    triangles.push_back(new Triangle(vertex_a, vertex_c, vertex_d, uv, uv, uv));
+
+    // Face: BDHF
+    triangles.push_back(new Triangle(vertex_b, vertex_h, vertex_d, uv, uv, uv));
+    triangles.push_back(new Triangle(vertex_b, vertex_f, vertex_h, uv, uv, uv));
+
+    // Face: EFGH
+    triangles.push_back(new Triangle(vertex_f, vertex_h, vertex_e, uv, uv, uv));
+    triangles.push_back(new Triangle(vertex_g, vertex_h, vertex_e, uv, uv, uv));
+
+    // Face: ACGE
+    triangles.push_back(new Triangle(vertex_a, vertex_c, vertex_g, uv, uv, uv));
+    triangles.push_back(new Triangle(vertex_a, vertex_e, vertex_g, uv, uv, uv));
+
+    // Face: CDHG
+    triangles.push_back(new Triangle(vertex_h, vertex_d, vertex_c, uv, uv, uv));
+    triangles.push_back(new Triangle(vertex_g, vertex_c, vertex_h, uv, uv, uv));
+
+    // Face: ABEF
+    triangles.push_back(new Triangle(vertex_a, vertex_b, vertex_f, uv, uv, uv));
+    triangles.push_back(new Triangle(vertex_a, vertex_e, vertex_f, uv, uv, uv));
+
+    // Build the cube mesh
+    SingleCube *singleCube = new SingleCube(triangles, springs);
+    vector<SingleCube *> cubies;
+    cubies.push_back(singleCube);
+
+    this->cubeMesh = new CubeMesh(cubies);
+    // Build add_cube_above and add_cube_right
 }
 
-// Simulation logic
+// ============================
+// ===== Simulation Logic =====
+// ============================
+
 void Cube::simulate(double frames_per_sec, double simulation_steps, CubeParameters *cp,
-                     vector<Vector3D> external_accelerations,
-                     vector<CollisionObject *> *collision_objects) {
+                    vector<Vector3D> external_accelerations, vector<CollisionObject *> *collision_objects) {
 
   double mass = width * height * cp->density / num_width_points / num_height_points;
   double delta_t = 1.0f / frames_per_sec / simulation_steps;
@@ -300,7 +306,7 @@ void Cube::break_spring(EdgeSpring *s) {
   
   // fracture all springs in cube
   for (auto edge: s->single_cube->edges) {
-    edge->fractured = true;
+    edge.fractured = true;
   }
 
   // mark all triangles as fractured for the shader
@@ -310,3 +316,4 @@ void Cube::break_spring(EdgeSpring *s) {
 
   return;
 }
+

@@ -5,6 +5,7 @@ set(CLOTHSIM_VIEWER_SOURCE
     # Cloth simulation objects
     cloth.cpp
     mesh.cpp
+        cube.cpp
 
     # Collision objects
     collision/sphere.cpp

@@ -14,13 +14,12 @@ src/CMakeFiles/clothsim.dir/camera.cpp.o: CGL/include/CGL/vector4D.h
 
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/cloth.cpp
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/cloth.h
-src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/clothMesh.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/collision/collisionObject.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/collision/plane.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/collision/sphere.h
+src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/mesh.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/misc/sphere_drawing.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/pointMass.h
-src/CMakeFiles/clothsim.dir/cloth.cpp.o: src/spring.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: CGL/include/CGL/CGL.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: CGL/include/CGL/misc.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: CGL/include/CGL/vector3D.h
@@ -253,28 +252,21 @@ src/CMakeFiles/clothsim.dir/cloth.cpp.o: ext/nanogui/include/nanogui/vscrollpane
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: ext/nanogui/include/nanogui/widget.h
 src/CMakeFiles/clothsim.dir/cloth.cpp.o: ext/nanogui/include/nanogui/window.h
 
-src/CMakeFiles/clothsim.dir/clothMesh.cpp.o: src/clothMesh.cpp
-src/CMakeFiles/clothsim.dir/clothMesh.cpp.o: src/clothMesh.h
-src/CMakeFiles/clothsim.dir/clothMesh.cpp.o: src/pointMass.h
-src/CMakeFiles/clothsim.dir/clothMesh.cpp.o: CGL/include/CGL/CGL.h
-src/CMakeFiles/clothsim.dir/clothMesh.cpp.o: CGL/include/CGL/misc.h
-src/CMakeFiles/clothsim.dir/clothMesh.cpp.o: CGL/include/CGL/vector3D.h
-
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/camera.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/cloth.h
-src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/clothMesh.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/clothSimulator.cpp
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/clothSimulator.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/collision/collisionObject.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/collision/plane.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/collision/sphere.h
+src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/cube.h
+src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/mesh.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/misc/camera_info.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/misc/collada_info.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/misc/file_utils.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/misc/sphere_drawing.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/misc/stb_image.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/pointMass.h
-src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: src/spring.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: CGL/include/CGL/CGL.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: CGL/include/CGL/matrix3x3.h
 src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: CGL/include/CGL/matrix4x4.h
@@ -512,15 +504,15 @@ src/CMakeFiles/clothsim.dir/clothSimulator.cpp.o: ext/nanogui/include/nanogui/wi
 
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/camera.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/cloth.h
-src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/clothMesh.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/clothSimulator.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/collision/collisionObject.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/collision/plane.cpp
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/collision/plane.h
+src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/cube.h
+src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/mesh.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/misc/camera_info.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/misc/collada_info.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/pointMass.h
-src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: src/spring.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: CGL/include/CGL/CGL.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: CGL/include/CGL/matrix3x3.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: CGL/include/CGL/matrix4x4.h
@@ -756,10 +748,11 @@ src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: ext/nanogui/include/nanogui/v
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: ext/nanogui/include/nanogui/widget.h
 src/CMakeFiles/clothsim.dir/collision/plane.cpp.o: ext/nanogui/include/nanogui/window.h
 
-src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: src/clothMesh.h
 src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: src/collision/collisionObject.h
+src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: src/collision/plane.h
 src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: src/collision/sphere.cpp
 src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: src/collision/sphere.h
+src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: src/mesh.h
 src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: src/misc/sphere_drawing.h
 src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: src/pointMass.h
 src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: CGL/include/CGL/CGL.h
@@ -996,20 +989,20 @@ src/CMakeFiles/clothsim.dir/collision/sphere.cpp.o: ext/nanogui/include/nanogui/
 
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/camera.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/cloth.h
-src/CMakeFiles/clothsim.dir/main.cpp.o: src/clothMesh.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/clothSimulator.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/collision/collisionObject.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/collision/plane.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/collision/sphere.h
+src/CMakeFiles/clothsim.dir/main.cpp.o: src/cube.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/json.hpp
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/main.cpp
+src/CMakeFiles/clothsim.dir/main.cpp.o: src/mesh.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/misc/camera_info.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/misc/collada_info.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/misc/file_utils.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/misc/getopt.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/misc/sphere_drawing.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: src/pointMass.h
-src/CMakeFiles/clothsim.dir/main.cpp.o: src/spring.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: CGL/include/CGL/CGL.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: CGL/include/CGL/matrix3x3.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: CGL/include/CGL/matrix4x4.h
@@ -1244,6 +1237,13 @@ src/CMakeFiles/clothsim.dir/main.cpp.o: ext/nanogui/include/nanogui/toolbutton.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: ext/nanogui/include/nanogui/vscrollpanel.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: ext/nanogui/include/nanogui/widget.h
 src/CMakeFiles/clothsim.dir/main.cpp.o: ext/nanogui/include/nanogui/window.h
+
+src/CMakeFiles/clothsim.dir/mesh.cpp.o: src/mesh.cpp
+src/CMakeFiles/clothsim.dir/mesh.cpp.o: src/mesh.h
+src/CMakeFiles/clothsim.dir/mesh.cpp.o: src/pointMass.h
+src/CMakeFiles/clothsim.dir/mesh.cpp.o: CGL/include/CGL/CGL.h
+src/CMakeFiles/clothsim.dir/mesh.cpp.o: CGL/include/CGL/misc.h
+src/CMakeFiles/clothsim.dir/mesh.cpp.o: CGL/include/CGL/vector3D.h
 
 src/CMakeFiles/clothsim.dir/misc/file_utils.cpp.o: src/misc/dirent.h
 src/CMakeFiles/clothsim.dir/misc/file_utils.cpp.o: src/misc/file_utils.cpp
