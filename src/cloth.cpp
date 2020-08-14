@@ -8,6 +8,9 @@
 #include "collision/plane.h"
 #include "collision/sphere.h"
 
+#define SHARDS 20
+#define SHARDED true
+
 using namespace std;
 
 Cloth::Cloth(double width, double height, int num_width_points,
@@ -48,8 +51,54 @@ void Cloth::getPointMassPos(int i, int j, Vector3D* out) {
   out->z = z;
 }
 
+vector<Vector3D> generate_random_centroids(bool horizontal) {
+    // The return vector
+    vector<Vector3D> return_vector;
+
+    // Generates NUM_SHARDS number of centroids in [0,1]^2
+    for (int i = 0; i < SHARDS; i++) {
+        // Build the centroid
+        Vector3D centroid(
+                ((double) rand() / RAND_MAX),
+                ((double) rand() / RAND_MAX),
+                ((double) rand() / RAND_MAX));
+
+        // Remove the randomness of one dimension depending on orientation
+        if (horizontal) {
+            centroid.y = 1.0;
+        } else {
+            centroid.z = 0.0;
+        }
+
+        // Add to the return vector
+        return_vector.push_back(centroid);
+    }
+
+    return return_vector;
+}
+
+int cluster_point(Vector3D &point, vector<Vector3D> &centroids) {
+    int arg_min_dist = 0;
+    double min_dist = (point - centroids[0]).norm();
+
+    for (int i = 1; i < centroids.size(); i++) {
+        double dist = (point - centroids[i]).norm();
+
+        if (dist < min_dist) {
+            min_dist = dist;
+            arg_min_dist = i;
+        }
+    }
+
+    return arg_min_dist;
+}
+
 void Cloth::buildGrid() {
-  // Build all point masses
+  // Generate random centroids
+  bool horizontal = orientation == HORIZONTAL;
+  vector<Vector3D> random_centroids = generate_random_centroids(horizontal);
+
+  // Build all the point masses
   for (int i = 0; i < num_height_points; i++) {
     for (int j = 0; j < num_width_points; j++) {
       double x = j * (width / num_width_points);
@@ -65,8 +114,9 @@ void Cloth::buildGrid() {
       }
       Vector3D pos = Vector3D(x, y, z);
       bool isPinned = std::any_of(pinned.begin(), pinned.end(), [=](vector<int> x){return x[0] == j && x[1] == i;});
-      PointMass p = PointMass(pos, isPinned);
       point_masses.emplace_back(pos, isPinned);
+      point_masses.back().cluster = cluster_point(pos, random_centroids);
+      cout << point_masses.back().cluster << endl;
     }
   }
 
@@ -176,6 +226,10 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   for (int i = 0; i < springs.size(); i++) {
     EdgeSpring *s = &springs[i];
     if (s->fracture_thresh != 0 && (s->pm_a->position - s->pm_b->position).norm() > (s->rest_length * s->fracture_thresh)) {
+        if (SHARDED && s->pm_a->cluster == s->pm_b->cluster) {
+            continue;
+        }
+
       break_spring(s);
     }
   }
@@ -460,8 +514,8 @@ double Cloth::getRandomFractureThresh(double min, double max) {
 }
 
 void Cloth::setFractureThreshold() {
-  double min = 1.9;
-  double max = 2.9; 
+  double min = 1.1;
+  double max = 1.3;
   for (int i = 0; i < springs.size(); i++) {
     // Add random fracture threshold values to all springs
     EdgeSpring *s = &springs[i];
@@ -475,9 +529,7 @@ void Cloth::setFractureThreshold() {
     
     // random tear
     s->fracture_thresh = getRandomFractureThresh(min, max);
-    
   }
-
 }
 
 void Cloth::break_spring(EdgeSpring *s) {

@@ -36,6 +36,8 @@ struct PointMass {
   bool pinned;
   Vector3D start_position;
 
+  int cluster;
+
   // dynamic values
   Vector3D position;
   Vector3D last_position;
