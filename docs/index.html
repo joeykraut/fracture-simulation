@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <style>
+        body {
+            padding: 100px;
+            width: 1000px;
+            margin: auto;
+            text-align: left;
+            font-weight: 300;
+            font-family: 'Open Sans', sans-serif;
+            color: #121212;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+    </style>
+    <title>CS 184 Fracture Simulation</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+<body>
+    <br />
+    <h1 align="middle">Final Project</h1>
+    <h2 align="middle">Divi Schmidt and Joey Kraut</h2>
+    <br><br>
+
+    <h2>What we need</h2>
+    <div>
+        Abstract<br><br>
+        A paragraph summary of the entire project.<br><br>
+        Technical approach<br><br>
+        A 1-2 page summary of your technical approach, techniques used, algorithms implemented, etc. (use references to
+        papers or other resources for further detail). Highlight how your approach varied from the references used (did
+        you implement a subset, or did you change or enhance anything), the unique decisions you made and why.<br><br>
+        A description of problems encountered and how you tackled them.<br><br>
+        A description of lessons learned.<br><br>
+        Results<br><br>
+        Your final images, animations, video of your system (whichever is relevant). You can include results that you
+        think show off what you built but that you did not have time to go over on presentation day.<br><br>
+        References<br><br>
+        Contributions from each team member<br><br>
+        A clear description of the work contributed by each team member.<br><br>
+    </div>
+    <br><br>
+
+    <h2>Abstract</h2>
+    <p>In this project, we expanded the cloth simulation project to include fracture simulation for 2D and 3D objects.
+        First, we augmented the spring and mass model for the 2D cloth by adding a max length value to the
+        springs. If exceeded, we broke the spring. We experimented with a couple methods for assigning these max length
+        values, additionally experimenting with different rules for rendering the mesh once these fractures have
+        occurred. This same framework was then expanded to model 3D objects. This came with more advanced rules for
+        creating spring mass models, creating these triangle meshes, and breaking this model when fractured. TODO add
+        more about 3D
+    </p>
+    <br><br>
+
+    <h1>Technical Approach</h1>
+    <p>
+        The main paper that we used for this project was
+        <a href="https://link.springer.com/article/10.1007/BF01900837">this paper</a> as it fit nicely within the spring
+        mass model we designed in project 4.
+        
+    </p>
+    <br><br>
+
+
+</body>
+
+</html>
