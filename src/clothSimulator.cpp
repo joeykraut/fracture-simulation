@@ -469,6 +469,7 @@ void ClothSimulator::drawPhong(GLShader &shader) {
   MatrixXf normals(4, num_tris * 3);
   MatrixXf uvs(2, num_tris * 3);
   MatrixXf tangents(4, num_tris * 3);
+  MatrixXf masks(1, num_tris * 3); 
 
   for (int i = 0; i < num_tris; i++) {
     Triangle *tri = cloth->clothMesh->triangles[i];
@@ -496,13 +497,18 @@ void ClothSimulator::drawPhong(GLShader &shader) {
     tangents.col(i * 3    ) << 1.0, 0.0, 0.0, 1.0;
     tangents.col(i * 3 + 1) << 1.0, 0.0, 0.0, 1.0;
     tangents.col(i * 3 + 2) << 1.0, 0.0, 0.0, 1.0;
-  }
 
+    bool fractured = tri->pm1->fractured || tri->pm2->fractured || tri->pm3->fractured;
+    masks.col(i * 3    ) << float(int(!fractured));
+    masks.col(i * 3 + 1) << float(int(!fractured));
+    masks.col(i * 3 + 2) << float(int(!fractured));
+  }
 
   shader.uploadAttrib("in_position", positions, false);
   shader.uploadAttrib("in_normal", normals, false);
   shader.uploadAttrib("in_uv", uvs, false);
   shader.uploadAttrib("in_tangent", tangents, false);
+  shader.uploadAttrib("in_mask", masks, false);
 
   shader.drawArray(GL_TRIANGLES, 0, num_tris * 3);
 }

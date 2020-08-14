@@ -92,6 +92,7 @@ void SphereMesh::build_data() {
   normals = MatrixXf(4, sphere_num_indices * 3);
   uvs = MatrixXf(2, sphere_num_indices * 3);
   tangents = MatrixXf(4, sphere_num_indices * 3);
+  masks = MatrixXf(1, sphere_num_indices * 3);
 
   for (int i = 0; i < sphere_num_indices; i += 3) {
     double *vPtr1 = &Vertices[VERTEX_SIZE * Indices[i]];
@@ -138,6 +139,10 @@ void SphereMesh::build_data() {
     tangents.col(i    ) << t1.x, t1.y, t1.z, 0.0;
     tangents.col(i + 1) << t2.x, t2.y, t2.z, 0.0;
     tangents.col(i + 2) << t3.x, t3.y, t3.z, 0.0;
+
+    masks.col(i    ) << 1.;
+    masks.col(i + 1) << 1.;
+    masks.col(i + 2) << 1.;
   }
 }
 
@@ -159,7 +164,9 @@ void SphereMesh::draw_sphere(GLShader &shader, const Vector3D &p, double r) {
   if (shader.attrib("in_tangent", false) != -1) {
     shader.uploadAttrib("in_tangent", tangents, false);
   }
-
+  if (shader.attrib("in_mask", false) != -1) {
+    shader.uploadAttrib("in_mask", masks, false);
+  }
   shader.drawArray(GL_TRIANGLES, 0, sphere_num_indices);
 }
 

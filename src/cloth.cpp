@@ -278,6 +278,10 @@ void Cloth::reset() {
   for (int i = 0; i < springs.size(); i++) {
     springs[i].fractured = false;
   }
+
+  for (int i = 0; i < point_masses.size(); i++) {
+    point_masses[i].fractured = false;
+  }
 }
 
 void Cloth::buildClothMesh() {
@@ -456,22 +460,32 @@ double Cloth::getRandomFractureThresh(double min, double max) {
 }
 
 void Cloth::setFractureThreshold() {
-  double min = 1.2;
-  double max = 1.8; 
+  double min = 1.9;
+  double max = 2.9; 
   for (int i = 0; i < springs.size(); i++) {
     // Add random fracture threshold values to all springs
     EdgeSpring *s = &springs[i];
+
+    // middle tear only
+    // double tear_loc = (width / num_width_points) * (num_width_points / 2.);
+    // if (s->pm_a->position.x == tear_loc || s->pm_b->position.x == tear_loc 
+    //     || (s->pm_a->position.x > tear_loc && s->pm_b->position.x < tear_loc)
+    //     || (s->pm_a->position.x < tear_loc && s->pm_b->position.x > tear_loc))
+    //   s->fracture_thresh = getRandomFractureThresh(min, max);
+    
+    // random tear
     s->fracture_thresh = getRandomFractureThresh(min, max);
+    
   }
 
 }
 
 void Cloth::break_spring(EdgeSpring *s) {
+  // mark point masses as fractured
+  s->pm_a->fractured = true;
+  s->pm_b->fractured = true;
+
+  // mark all edges in triangle as fractured
   s->fractured = true;
-
-  // Split the triangle mesh to account for fracture
-  Halfedge *h1 = s->pm_a->halfedge;
-  Halfedge *h2 = s->pm_b->halfedge;
-
   return;
 }
