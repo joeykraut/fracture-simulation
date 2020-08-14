@@ -16,7 +16,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "misc/stb_image.h"
 
-#define CLOTH false
+#define CLOTH true
 
 using namespace nanogui;
 using namespace std;
@@ -384,7 +384,6 @@ void ClothSimulator::drawWireframe(GLShader &shader) {
         positions.col(si) << pa.x, pa.y, pa.z, 1.0;
         positions.col(si + 1) << pb.x, pb.y, pb.z, 1.0;
 
-        cout << pa << endl;
         normals.col(si) << na.x, na.y, na.z, 0.0;
         normals.col(si + 1) << nb.x, nb.y, nb.z, 0.0;
 
