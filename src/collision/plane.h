@@ -16,7 +16,7 @@ public:
       : point(point), normal(normal.unit()), friction(friction) {}
 
   void render(GLShader &shader);
-  void collide(PointMass &pm);
+  bool collide(PointMass &pm);
   void simulate(double, Vector3D, vector<CollisionObject *> *);
   void zero_forces() {
       return;

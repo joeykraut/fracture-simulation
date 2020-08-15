@@ -66,6 +66,8 @@ struct Cloth {
   double getRandomFractureThresh(double min, double max);
   void setFractureThreshold();
   void break_spring(EdgeSpring *s);
+  void pin_all();
+  void unpin_all();
   
   // Cloth properties
   double width;
@@ -88,6 +90,9 @@ struct Cloth {
 
   // Spatial hashing
   unordered_map<float, vector<PointMass *> *> map;
+
+private:
+    int pinned_state = 0;
 };
 
 #endif /* CLOTH_H */

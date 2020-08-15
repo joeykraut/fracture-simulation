@@ -16,10 +16,10 @@ Vector3D unit(Vector3D v) {
   return v / norm(v);
 }
 
-void Sphere::collide(PointMass &pm) {
+bool Sphere::collide(PointMass &pm) {
   Vector3D origin_to_position = pm.position - origin;
   if (!(norm(origin_to_position) <= radius))
-    return;
+    return false;
 
   // The old position
   Vector3D old_position = pm.position;
@@ -36,6 +36,8 @@ void Sphere::collide(PointMass &pm) {
   Vector3D direction = this->origin - pm.position;
 
   this->forces += force_mag * direction;
+
+  return true;
 }
 
 void Sphere::render(GLShader &shader) {

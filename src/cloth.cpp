@@ -13,7 +13,8 @@
 #define TOL_MAX 1.3
 
 #define SHARDS 50
-#define SHARDED true
+#define SHARDED true 
+#define BRITTLE true
 
 using namespace std;
 
@@ -120,7 +121,6 @@ void Cloth::buildGrid() {
       bool isPinned = std::any_of(pinned.begin(), pinned.end(), [=](vector<int> x){return x[0] == j && x[1] == i;});
       point_masses.emplace_back(pos, isPinned);
       point_masses.back().cluster = cluster_point(pos, random_centroids);
-      cout << point_masses.back().cluster << endl;
     }
   }
 
@@ -141,6 +141,10 @@ void Cloth::buildGrid() {
       PointMass *curr = &point_masses[(i * num_width_points) + j];
       springs.emplace_back(prev, curr, BENDING);
     }
+  }
+
+  if (BRITTLE) {
+      pin_all();
   }
 }
 
@@ -220,10 +224,17 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
   }
 
   // TODO (Part 3): Handle collisions with other primitives.
+  bool collision = false;
   for (int i = 0; i < point_masses.size(); i++) {
     for (int j = 0; j < collision_objects->size(); j++) {
-      collision_objects->at(j)->collide(point_masses[i]);
+      if (collision_objects->at(j)->collide(point_masses[i])) {
+         collision = true;
+      }
     }
+  }
+
+  if (collision && BRITTLE) {
+      unpin_all();
   }
 
   // check if springs have crossed their threshold
@@ -240,20 +251,25 @@ void Cloth::simulate(double frames_per_sec, double simulation_steps, ClothParame
 
 
   // in length more than 10% per timestep [Provot 1995].
+  double extension = 1.2;
+  if (BRITTLE) {
+      extension = 1.0;
+  }
+
   for (int i = 0; i < springs.size(); i++) {
     EdgeSpring *s = &springs[i];
     if (s->fractured) {
       continue;
-    } else if ((s->pm_a->position - s->pm_b->position).norm() > (s->rest_length * 1.2)) {
+    } else if ((s->pm_a->position - s->pm_b->position).norm() > (s->rest_length * extension)) {
       if (s->pm_a->pinned) {
         // check if correct
-        s->pm_b->position = ((s->pm_b->position - s->pm_a->position).unit() * (s->rest_length * 1.2)) + s->pm_a->position;
+        s->pm_b->position = ((s->pm_b->position - s->pm_a->position).unit() * (s->rest_length * extension)) + s->pm_a->position;
       } else if (s->pm_b->pinned) {
-        s->pm_a->position = ((s->pm_a->position - s->pm_b->position).unit() * (s->rest_length * 1.2)) + s->pm_b->position;
+        s->pm_a->position = ((s->pm_a->position - s->pm_b->position).unit() * (s->rest_length * extension)) + s->pm_b->position;
       } else {
         Vector3D mid = ((s->pm_a->position - s->pm_b->position) / 2) + s->pm_b->position;
-        s->pm_a->position = (s->pm_a->position - mid).unit() * ((s->rest_length * 1.2) / 2.) + mid;
-        s->pm_b->position = (s->pm_b->position - mid).unit() * ((s->rest_length * 1.2) / 2.) + mid;
+        s->pm_a->position = (s->pm_a->position - mid).unit() * ((s->rest_length * extension) / 2.) + mid;
+        s->pm_b->position = (s->pm_b->position - mid).unit() * ((s->rest_length * extension) / 2.) + mid;
       }
     }
   }
@@ -544,4 +560,35 @@ void Cloth::break_spring(EdgeSpring *s) {
   // mark all edges in triangle as fractured
   s->fractured = true;
   return;
+}
+
+void Cloth::pin_all() {
+    if (pinned_state == 1) {
+        return;
+    }
+
+    for (auto &vertex : point_masses) {
+        vertex.pinned = true;
+    }
+
+    pinned_state = 1;
+}
+
+void Cloth::unpin_all() {
+    if (pinned_state == 2) {
+        return;
+    }
+
+    for (auto &vertex : point_masses) {
+        vertex.pinned = false;
+    }
+
+    // Fracture all cross shard springs
+    for (auto &spring : springs) {
+        if (spring.pm_a->cluster != spring.pm_b->cluster) {
+           break_spring(&spring);
+        }
+    }
+
+    pinned_state = 2;
 }

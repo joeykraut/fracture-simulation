@@ -20,7 +20,7 @@ public:
               friction(friction), m_sphere_mesh(Misc::SphereMesh(num_lat, num_lon)) {}
 
     void render(GLShader &shader);
-    void collide(PointMass &pm);
+    bool collide(PointMass &pm);
     void set_pinned(bool);
     void zero_forces();
     void update_moments(double);

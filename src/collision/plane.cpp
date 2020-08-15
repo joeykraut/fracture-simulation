@@ -18,9 +18,9 @@ Vector3D Plane::unit(Vector3D v) {
   return v / norm(v);
 }
 
-void Plane::collide(PointMass &pm) {
+bool Plane::collide(PointMass &pm) {
   if ((dot(pm.position - point, normal) > 0))
-    return;
+    return false;
 
   double intersect_t = dot(point - pm.last_position, normal) / dot(unit(pm.position - pm.last_position), normal);
   
@@ -31,6 +31,8 @@ void Plane::collide(PointMass &pm) {
   }
   intersect_t *= (1 - friction);
   pm.position = pm.last_position + (unit(pm.position - pm.last_position) * intersect_t);
+
+  return true;
 }
 
 void Plane::render(GLShader &shader) {
