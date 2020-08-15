@@ -4,6 +4,14 @@
 <head>
     <style>
         body {
+            margin: auto;
+            text-align: left;
+            font-weight: 300;
+            font-family: 'Open Sans', sans-serif;
+            color: #121212;
+        }
+
+        div.body-class {
             padding: 100px;
             width: 1000px;
             margin: auto;
@@ -36,312 +44,364 @@
 
 <body>
     <br />
-    <div padding=0px align="center">
+    <div padding=0px margin=0px align="center">
         <table style="width=100%">
             <tr>
-                <td align="middle">
-                    <iframe src="https://youtu.be/n-IAcCXnehU"></iframe> 
-                </td>
+
                 <td align="middle">
                     <img width=500px src='images/shards.png'></img>
                 </td>
+                <td align="middle">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Q42znTAVZHw" frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe> </td>
                 <td align="middle">
                     <img width=500px src='images/shattered-glass.png'></img>
                 </td>
             </tr>
         </table>
     </div>
-    <br><br>    
-    <h1 align="middle">Final Project</h1>
-    <h2 align="middle">Divi Schmidt and Joey Kraut</h2>
-    <br><br>
+    <div class="body-class">
+        <h1 align="middle">Final Project</h1>
+        <h2 align="middle">Divi Schmidt and Joey Kraut</h2>
+        <br><br>
 
-    <h2>Abstract</h2>
-    <p>
-        This project's focus was on extending the cloth simulation of project 4 to simulate materials as they
-        fracture and break in different ways. The project consisted of two primary components; code infrastructure
-        changes and fracture modeling. Much of the work spent on this project involved making changes to underlying
-        structure of the project like enabling forces to act on spheres, introducing resistive elastic forces from
-        a mesh on a sphere, and modifying the shaders to enable fractured appearances. On the fracture modeling side,
-        we implemented an approach from a paper we found which generated realistic looking tears. We then added our
-        own ideas to this approach for more interesting tearing and fracturing effects.
-    </p>
-    <br><br>
+        <h2>Abstract</h2>
+        <p>
+            This project's focus was on extending the cloth simulation of project 4 to simulate materials as they
+            fracture and break in different ways. The project consisted of two primary components; code infrastructure
+            changes and fracture modeling. Much of the work spent on this project involved making changes to underlying
+            structure of the project like enabling forces to act on spheres, introducing resistive elastic forces from
+            a mesh on a sphere, and modifying the shaders to enable fractured appearances. On the fracture modeling
+            side,
+            we implemented an approach from a paper we found which generated realistic looking tears. We then added our
+            own ideas to this approach for more interesting tearing and fracturing effects.
+        </p>
+        <br><br>
 
-    <h2>Fracture Modeling</h2>
-    <h3>Assigning Fracture Thresholds</h3>
-    <h4>Random Fracture Thresholds</h4>
-    <p>Our first strategy for assigning fracture thresholds was random assignment. This was suggested in
-        <a href="https://link.springer.com/article/10.1007/BF01900837">this paper</a> so that the fractures would occur
-        in arbitrary places and not all at once. In implementing this, we created a max and min threshold parameter, and
-        assigned thresholds randomly at uniform within this range. Our results varied greatly depending on how we
-        defined this parameter, and required some experimentation. Wider ranges would leave some springs very resistant
-        to fracture and leave us with a stringy cloth. Very low thresholds also proved problematic as the cloth would
-        splinter and fracture too much, sometimes leaving us without a cloth at all. Some examples are below.
-    <div align="center">
-        <table style="width=100%">
-            <tr>
-                <td align="middle">
-                    <img width=500px src='images/widerange.png'></img>
-                    <figcaption align="middle">Too wide of a range.
-                    </figcaption>
-                </td>
-                <td align="middle">
-                    <img width=500px src='images/splinter.png'></img>
-                    <figcaption align="middle">Too low of a range.</figcaption>
-                </td>
-            </tr>
-        </table>
-    </div>
-    Overall, we found the best range to be around 1.3, 1.8 for most cases. We also noticed that this range was a
-    function of
-    the spring constant. It would be interesting to determine a relationship between the two instead of tweaking each
-    individually. Instead of this, however, we moved on to more complicated ways of assigning the spring constant.
-    </p>
-    <br><br>
+        <h2>Fracture Modeling</h2>
+        <h3>Assigning Fracture Thresholds</h3>
+        <h4>Random Fracture Thresholds</h4>
+        <p>Our first strategy for assigning fracture thresholds was random assignment. This was suggested in
+            <a href="https://link.springer.com/article/10.1007/BF01900837">this paper</a> so that the fractures would
+            occur
+            in arbitrary places and not all at once. In implementing this, we created a max and min threshold parameter,
+            and
+            assigned thresholds randomly at uniform within this range. Our results varied greatly depending on how we
+            defined this parameter, and required some experimentation. Wider ranges would leave some springs very
+            resistant
+            to fracture and leave us with a stringy cloth. Very low thresholds also proved problematic as the cloth
+            would
+            splinter and fracture too much, sometimes leaving us without a cloth at all. Some examples are below.
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                        <img width=500px src='images/widerange.png'></img>
+                        <figcaption align="middle">Too wide of a range.
+                        </figcaption>
+                    </td>
+                    <td align="middle">
+                        <img width=500px src='images/splinter.png'></img>
+                        <figcaption align="middle">Too low of a range.</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        Overall, we found the best range to be around 1.3, 1.8 for most cases. We also noticed that this range was a
+        function of
+        the spring constant. It would be interesting to determine a relationship between the two instead of tweaking
+        each
+        individually. Instead of this, however, we moved on to more complicated ways of assigning the spring constant.
+        </p>
+        <br><br>
 
-    <h4>Systematic Assignment</h4>
-    <p>One problem we noticed with the randomized fracture was that any fractures not at the point of contact looked
-        very unrealistic when the shaders were enabled. There would be random holes that did not make sense.
-        Looking for a solution, we tried a more deterministic way of assigning thresholds. This allowed us to model more
-        realisic looking tears and heavily control the behavior of the mesh.
-        For this, we created cloths where there were only one or two columns in the mesh which had fracture
-        thresholds. Here is an example:
+        <h4>Systematic Assignment</h4>
+        <p>One problem we noticed with the randomized fracture was that any fractures not at the point of contact looked
+            very unrealistic when the shaders were enabled. There would be random holes that did not make sense.
+            Looking for a solution, we tried a more deterministic way of assigning thresholds. This allowed us to model
+            more
+            realisic looking tears and heavily control the behavior of the mesh.
+            For this, we created cloths where there were only one or two columns in the mesh which had fracture
+            thresholds. Here is an example
+        </p>
         <br>
-    <div align="middle"><img align="middle" width=500px src='images/high-res-cloth-tear.gif'></img></div>
-    <br>
-    As you can see, the shaders do not have strange holes and the cloth tears in a fairly realistic manner, widening
-    the one large tear as the sphere pushes through, instead of creating a small hole in the middle and random ones
-    on the side.
 
-    This was rendered at a very high cloth resolution as this made the cloth tears look less blocky and more
-    realistic. This decreased the speed of the simulation greatly.
-
-    Although these results allow us more freedom to create realistic looking tears, this strategy is not easily
-    expanded. Each new affect has to be implemented by hand, and the parameters have to be tweaked after this to get
-    just the right looking cloth. Thus, we moved on to a more complex strategy that was both random and systematic.
-    </p>
-    <br><br>
-
-
-    <h4>Centroid Assignment</h4>
-    <p>
-        One addition off of the papers we based this project on is centroid assignment. The goal of centroid
-        assignment is to break the cloth into shards or chunks for more chunked fracture than
-        the previous implementations gave.
-    </p>
-    <p>
-        The changes needed to implement this threshold assignment begin before mesh creation. First, we choose
-        $k$ centroids at random across the mesh (where $k$ is a configurable parameter). We experimented with two
-        random centroid methods; choosing uniformly at random across the mesh and choosing from a gaussian centered
-        at the center of the mesh and capped at the edges.
-    </p>
-    <p>
-        Once the centroids are determined, we cluster the pointmasses according to nearest centroid, that is
-        $$cluster_x = \text{argmin}_i ||c_i - x||_2$$
-        where $c_i$ is the ith centroid and $x$ is the pointmass in question. The threshold for each spring is
-        then randomly chosen as in the previous two methods if the spring's pointmasses are in different clusters
-        and the threshold is set to infinity for springs whose points lie in the same cluster. As a result, when the
-        cloth fractures it shatters into shards. See the section on <b>Shard Fracture</b> for results.
-    </p>
-    <br><br>
-
-    <h2>Fracture Behavior</h2>
-    <h4>Spring Only Fracture</h4>
-    <p>
-        Determining when and where to fracture the springs is only half the battle. After marking a spring as fractured,
-        we have a lot of freedom to determine the behavior of the mesh and the rendering. Our first strategy was to make
-        each spring dissapear after it was fractured. This, as we soon learned, only worked for the wireframe, and
-        sometimes left springs hanging alone in the air or produced other strange affects.
-        Attempting to remedy these strange affects and correct the shaders, we decided to mark each triangle connected
-        to the spring, and mask these fractured triangles within the shaders. This however, did not work as it exposed
-        the triangle mesh structure in the cloth and made it look very unrealistic. Here is an example:
+        <div align="middle"><img align="middle" width=500px src='images/high-res-cloth-tear.gif'></img></div>
         <br>
-    <div align="middle"><img align="middle" width=600px src='images/spring-only.png'></img></div>
-    <br>
-    </p>
-    <br><br>
+        As you can see, the shaders do not have strange holes and the cloth tears in a fairly realistic manner, widening
+        the one large tear as the sphere pushes through, instead of creating a small hole in the middle and random ones
+        on the side.
 
-    <h4>Point Mass and Spring Fracture</h4>
-    <p>In order to remedy the problems mentioned above, we decided to instead mark any point masses that were connected
-        to a fractured spring. In the shaders, we then masked each triangle that was connected to this point mass. This
-        meant that one spring fracture had a very large footprint on the mesh, which was not ideal, however, this made
-        the cloth much less "triangle-y". The affect of these big holes we mitigated by increasing the resolution of the
-        mesh. Here is an example of a higher resolution mesh with the marked point masses.</p>
-    <div align="middle"><img src='images/random-tear-high-res.gif'><img></div>
-    <br><br>
+        This was rendered at a very high cloth resolution as this made the cloth tears look less blocky and more
+        realistic. This decreased the speed of the simulation greatly.
 
-    <h4>Shard Fracture</h4>
-    <p>
-        Shard fracture builds off centroid assignment for fracture modeling. Shard fracture can be broken down
-        into two behaviors.
-    </p>
-    <p>
-        The first behavior of shard fracturing is to simply use the thresholds defined by centroid assignment.
-        As a result, it is impossible for springs to fracture unless they lie on the boundary between two
-        paritions of the mesh. This results in a kind of seam-aligned fracture that may be more realistic for
-        materials than the approach of randomly assigning thresholds. Essentially the difference here is between
-        more realistic random tears versus less realistic random holes.
-    </p>
-    <p>
-        A visualization of this random tearing is below
-    </p>
-    <div align="middle">
-        <img src="images/Shard_Seam.gif" width="300px" />
-        <figcaption align="middle">Shard Seam Behavior</figcaption>
+        Although these results allow us more freedom to create realistic looking tears, this strategy is not easily
+        expanded. Each new affect has to be implemented by hand, and the parameters have to be tweaked after this to get
+        just the right looking cloth. Thus, we moved on to a more complex strategy that was both random and systematic.
+        </p>
+        <br><br>
+
+
+        <h4>Centroid Assignment</h4>
+        <p>
+            One addition off of the papers we based this project on is centroid assignment. The goal of centroid
+            assignment is to break the cloth into shards or chunks for more chunked fracture than
+            the previous implementations gave.
+        </p>
+        <p>
+            The changes needed to implement this threshold assignment begin before mesh creation. First, we choose
+            $k$ centroids at random across the mesh (where $k$ is a configurable parameter). We experimented with two
+            random centroid methods; choosing uniformly at random across the mesh and choosing from a gaussian centered
+            at the center of the mesh and capped at the edges.
+        </p>
+        <p>
+            Once the centroids are determined, we cluster the pointmasses according to nearest centroid, that is
+            $$cluster_x = \text{argmin}_i ||c_i - x||_2$$
+            where $c_i$ is the ith centroid and $x$ is the pointmass in question. The threshold for each spring is
+            then randomly chosen as in the previous two methods if the spring's pointmasses are in different clusters
+            and the threshold is set to infinity for springs whose points lie in the same cluster. As a result, when the
+            cloth fractures it shatters into shards. See the section on <b>Shard Fracture</b> for results.
+        </p>
+        <br><br>
+
+        <h2>Fracture Behavior</h2>
+        <h4>Spring Only Fracture</h4>
+        <p>
+            Determining when and where to fracture the springs is only half the battle. After marking a spring as
+            fractured,
+            we have a lot of freedom to determine the behavior of the mesh and the rendering. Our first strategy was to
+            make
+            each spring dissapear after it was fractured. This, as we soon learned, only worked for the wireframe, and
+            sometimes left springs hanging alone in the air or produced other strange affects.
+            Attempting to remedy these strange affects and correct the shaders, we decided to mark each triangle
+            connected
+            to the spring, and mask these fractured triangles within the shaders. This however, did not work as it
+            exposed
+            the triangle mesh structure in the cloth and made it look very unrealistic. Here is an example:
+            <br>
+        <div align="middle"><img align="middle" width=600px src='images/spring-only.png'></img></div>
+        <br>
+        </p>
+        <br><br>
+
+        <h4>Point Mass and Spring Fracture</h4>
+        <p>In order to remedy the problems mentioned above, we decided to instead mark any point masses that were
+            connected
+            to a fractured spring. In the shaders, we then masked each triangle that was connected to this point mass.
+            This
+            meant that one spring fracture had a very large footprint on the mesh, which was not ideal, however, this
+            made
+            the cloth much less "triangle-y". The affect of these big holes we mitigated by increasing the resolution of
+            the
+            mesh. Here is an example of a higher resolution mesh with the marked point masses.</p>
+        <div align="middle"><img src='images/random-tear-high-res.gif'><img></div>
+        <br><br>
+
+        <h4>Shard Fracture</h4>
+        <p>
+            Shard fracture builds off centroid assignment for fracture modeling. Shard fracture can be broken down
+            into two behaviors.
+        </p>
+        <p>
+            The first behavior of shard fracturing is to simply use the thresholds defined by centroid assignment.
+            As a result, it is impossible for springs to fracture unless they lie on the boundary between two
+            paritions of the mesh. This results in a kind of seam-aligned fracture that may be more realistic for
+            materials than the approach of randomly assigning thresholds. Essentially the difference here is between
+            more realistic random tears versus less realistic random holes.
+        </p>
+        <p>
+            A visualization of this random tearing is below
+        </p>
+        <div align="middle">
+            <img src="images/Shard_Seam.gif" width="300px" />
+            <figcaption align="middle">Shard Seam Behavior</figcaption>
+        </div>
+        <p>
+            The second behavior shard fracture implements is sharded fracture. That is, completely fracturing the
+            shards into clusters. This is useful for shattering things like glass and plastics. To implement this
+            effect we simply unpin all vertices and remove all edges that cross clusters upon initial collision.
+            Of course, this is missing some realism, but the fracturing into shards - the key contribution - is
+            achieved.
+        </p>
+        <p>
+            A visualization of the sharded fracture is seen below.
+        </p>
+        <div align="middle">
+            <img src="images/shard_shard.gif" width="300px" />
+            <figcaption align="middle">Sharded Fracture Behavior</figcaption>
+        </div>
+        <p>
+            One problem we encountered while rendering this simulation was that the cloth would stick to the sphere
+            as a result of the naive sphere intersection code. To remedy this, we changed the code to conform each
+            spring to stay the same length after each timestep instead of 1.1 times its length. This pulled the
+            vertices away from the sphere and helped our fracture look better.
+        </p>
+        <br><br>
+
+        <h2>Code Infrastructure Changes</h2>
+        <h4>Enabling Forces on Spheres</h4>
+        <p>
+            The first code change necessary to the simulation backbone was to enable spheres to move as forces (e.g.
+            gravity)
+            are applied. This was necessary so that we could collide spheres with pinned meshes to analyze stretches and
+            tears.
+        </p>
+        <p>
+            To make this code change, we simply added a <code>simulate</code> method to the <code>collisionObject</code>
+            class that is called for every collision object in the same loop that the cloth's <code>simulate</code> is.
+            As well, we added a <code>Vector3D</code> force vector that accumulates forces applied to a sphere. The
+            sphere also maintains its first two moments so that we can update its position and velocity as in the
+            pointmass mesh. At every simulation step, we update the sphere as a rigid body around its center which
+            moves according to the following equations $x_t$
+            $$\begin{align} v_t & = k_dv_t + \Delta_t f / m \\ x_t & = x_{t-1} + \Delta_t * v_t \end{align}$$
+            where $v$ is velocity, $x$ is position, $k_d$ is a damping coefficient, $f$ is the accumulated force
+            vector, and $m$ is the sphere mass.
+        </p>
+        <p>
+            The modeling assumption used here are that the sphere is accurately modeled as a rigid body.
+        </p>
+        <p>
+            Here is an example of the results after this change.
+        <div align="middle"><img src="images/frac_no_resis.gif" width="300px" /></div>
+        <figcaption align="middle">Fracture without Mesh Resistance</figcaption>
+        </p>
+
+        <h4>Mesh Resistance</h4>
+        <p>
+            The second code change to enable realistic fracturing was to make the mesh resist the sphere by applying
+            an opposing force to the sphere. To enable the cloth to apply a resistive force, we added a constant $k_r$
+            to allow us to control the "stretchiness" of the mesh and added the following force point by point on
+            a collision to the sphere
+            $$k_r||x_a - x_b|| * \frac{c - x_b}{||c - x_b||}$$
+            where $x_a$ is the position of a point before sphere displacement, $x_b$ is the position of the point after
+            sphere displacement, and $c$ is the center of the sphere.
+        </p>
+        <p>
+            Overall this code change involved a small change to implement the equation above and a few larger structural
+            changes to how collisions are handled and when sphere moments are updated.
+        </p>
+        <p>
+            The results of this change are here.
+        <div align="middle">
+            <table>
+                <tr>
+                    <td>
+                        <img src="images/sphere_bounce.gif" width="300px" />
+                        <figcaption align="middle">Mesh Resisting Sphere</figcaption>
+                    </td>
+                    <td>
+                        <img src="images/frac_resis.gif" width="300px" />
+                        <figcaption align="middle">Mesh Fracture with Resistance</figcaption>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        </p>
+        <h4>Shader Changes</h4>
+        <p>
+            The third major code change we had to make was to enable shaders to show the breaking. To make this change,
+            we decided to break in units of triangles for the shader. If a spring is broken, it is marked broken along
+            with its point masses. We use this flag as a mask variable to each of the shaders; the shaders set the color
+            of a vertex to $(0, 0, 0, 0)$ if it has been broken.
+        </p>
+        <p>
+            The result of this is that the shaders now show holes in the mesh. Although the examples given below are
+            jagged, you can image with a higher resolution mesh the breaks appear more fine. Higher resolution meshes
+            seemed to slow down our computers unbearably so, and as a result these examples are not included.
+        </p>
+        <p>
+            An example image before this code change is here: <br>
+        <div align="middle"><img align="middle" src="images/portal.gif" width="300px" /></div>
+        <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
+        <br>
+        <br>
+        Here is an example of our final working shaders.
+        <br>
+        <br>
+        <div align="middle"><iframe width="560" height="315" src="https://www.youtube.com/embed/n-IAcCXnehU"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            <figcaption align="middle">The cloth. Random thresholds and high res.</figcaption>
+        </div>
+        <br>
+        </p>
+        <h2>Other Challenges and Lessons Learned</h2>
+        <p>
+            Apart from the challenges and problems faced we had one major challenge that we weren't able to overcome.
+            In particular, we had planned in our milestones to do 3D simulations with lattices of cubes. However, after
+            spending exorbitant amounts of time trying to render a new mesh structure, we abandoned this pursuit in
+            favor of more 2D results. A suggestion for future improvement of this would be to implement 3D strucutres
+            as the current fracture code could translate directly to a correctly implemented mesh.
+        </p>
+        <p>
+            As well, a lesson we learned along the way was just how important random mesh structures are for realism.
+            Our experiments that didn't have random thresholds looked far less realistic than our experiments with
+            random tears and thresholds. It has proven almost necessary to add randomness to a physical model in order
+            to simulate surface and structural defects.
+        </p>
+
+        <h2>
+            References
+        </h2>
+        <ol>
+            <li>Norton, A., Turk, G., Bacon, B. et al. Animation of fracture by physical modeling. The Visual Computer
+                7,
+                210–219 (1991). https://doi.org/10.1007/BF01900837</li>
+            <li>Torres L. Fracture Modeling in Computer Graphics. Computers & Graphics 45, 86-100 (2014).
+                https://doi.org/10.1016/j.cag.2014.08.006.</li>
+        </ol>
+
+        <h2>Contributions</h2>
+        <ul>
+            <li>
+                <b>Divi:</b> Divi built the initial fracture methods including reworking the edge and spring data
+                structures to combine as one for easy mesh fracturing, implementing random fracturing and systematic
+                assignment, and implementing the spring and point and spring based fracture methods.
+            </li>
+            <li>
+                <b>Joey:</b> Joey made all of the code infrastructural changes (sphere forces, mesh resistance,
+                shader changes) and implemented the centroid assignment and shard fractures.
+            </li>
+        </ul>
+        <p>
+            Both partners contributed equally overall and the ideas for improvement over the papers came from
+            ideation on both sides.
+        </p>
+
+        <br><br>
+        <div padding=0px margin=0px align="center">
+            <table style="width=100%">
+                <tr>
+
+                    <td align="middle">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/n-IAcCXnehU" frameborder="0"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                    </td>
+                    <td align="middle">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/Q42znTAVZHw" frameborder="0"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe> </td>
+
+                </tr>
+                <tr>
+                    <td align="middle">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/L2OccJ8dZnA" frameborder="0"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                    </td>
+                    <td align="middle">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/1ofK_x9ogD8" frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
     </div>
-    <p>
-        The second behavior shard fracture implements is sharded fracture. That is, completely fracturing the
-        shards into clusters. This is useful for shattering things like glass and plastics. To implement this
-        effect we simply unpin all vertices and remove all edges that cross clusters upon initial collision.
-        Of course, this is missing some realism, but the fracturing into shards - the key contribution - is
-        achieved.
-    </p>
-    <p>
-        A visualization of the sharded fracture is seen below.
-    </p>
-    <div align="middle">
-        <img src="images/shard_shard.gif" width="300px" />
-        <figcaption align="middle">Sharded Fracture Behavior</figcaption>
-    </div>
-    <p>
-        One problem we encountered while rendering this simulation was that the cloth would stick to the sphere
-        as a result of the naive sphere intersection code. To remedy this, we changed the code to conform each
-        spring to stay the same length after each timestep instead of 1.1 times its length. This pulled the
-        vertices away from the sphere and helped our fracture look better.
-    </p>
-    <br><br>
-
-    <h2>Code Infrastructure Changes</h2>
-    <h4>Enabling Forces on Spheres</h4>
-    <p>
-        The first code change necessary to the simulation backbone was to enable spheres to move as forces (e.g.
-        gravity)
-        are applied. This was necessary so that we could collide spheres with pinned meshes to analyze stretches and
-        tears.
-    </p>
-    <p>
-        To make this code change, we simply added a <code>simulate</code> method to the <code>collisionObject</code>
-        class that is called for every collision object in the same loop that the cloth's <code>simulate</code> is.
-        As well, we added a <code>Vector3D</code> force vector that accumulates forces applied to a sphere. The
-        sphere also maintains its first two moments so that we can update its position and velocity as in the
-        pointmass mesh. At every simulation step, we update the sphere as a rigid body around its center which
-        moves according to the following equations $x_t$
-        $$\begin{align} v_t & = k_dv_t + \Delta_t f / m \\ x_t & = x_{t-1} + \Delta_t * v_t \end{align}$$
-        where $v$ is velocity, $x$ is position, $k_d$ is a damping coefficient, $f$ is the accumulated force
-        vector, and $m$ is the sphere mass.
-    </p>
-    <p>
-        The modeling assumption used here are that the sphere is accurately modeled as a rigid body.
-    </p>
-    <p>
-        Here is an example of the results after this change.
-        <divalign="middle"><img src="images/frac_no_resis.gif" width="300px" /></div>
-            <figcaption align="middle">Fracture without Mesh Resistance</figcaption>
-    </p>
-
-    <h4>Mesh Resistance</h4>
-    <p>
-        The second code change to enable realistic fracturing was to make the mesh resist the sphere by applying
-        an opposing force to the sphere. To enable the cloth to apply a resistive force, we added a constant $k_r$
-        to allow us to control the "stretchiness" of the mesh and added the following force point by point on
-        a collision to the sphere
-        $$k_r||x_a - x_b|| * \frac{c - x_b}{||c - x_b||}$$
-        where $x_a$ is the position of a point before sphere displacement, $x_b$ is the position of the point after
-        sphere displacement, and $c$ is the center of the sphere.
-    </p>
-    <p>
-        Overall this code change involved a small change to implement the equation above and a few larger structural
-        changes to how collisions are handled and when sphere moments are updated.
-    </p>
-    <p>
-        The results of this change are here.
-    <div align="middle">
-        <table>
-            <tr>
-                <td>
-                    <img src="images/sphere_bounce.gif" width="300px" />
-                    <figcaption align="middle">Mesh Resisting Sphere</figcaption>
-                </td>
-                <td>
-                    <img src="images/frac_resis.gif" width="300px" />
-                    <figcaption align="middle">Mesh Fracture with Resistance</figcaption>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    </p>
-    <h4>Shader Changes</h4>
-    <p>
-        The third major code change we had to make was to enable shaders to show the breaking. To make this change,
-        we decided to break in units of triangles for the shader. If a spring is broken, it is marked broken along
-        with its point masses. We use this flag as a mask variable to each of the shaders; the shaders set the color
-        of a vertex to $(0, 0, 0, 0)$ if it has been broken.
-    </p>
-    <p>
-        The result of this is that the shaders now show holes in the mesh. Although the examples given below are
-        jagged, you can image with a higher resolution mesh the breaks appear more fine. Higher resolution meshes
-        seemed to slow down our computers unbearably so, and as a result these examples are not included.
-    </p>
-    <p>
-        An example image before this code change is here: <br>
-    <div align="middle"><img align="middle" src="images/portal.gif" width="300px" /></div>
-    <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
-    <br>
-    <br>
-    Here is an example of our final working shaders.
-    <br>
-    <br>
-    <div align="middle"><iframe src="https://youtu.be/Q42znTAVZHw"></iframe>    </div>
-    <figcaption align="middle">The cloth. Random thresholds and high res.</figcaption>
-    <br>
-    </p>
-    <h2>Other Challenges and Lessons Learned</h2>
-    <p>
-        Apart from the challenges and problems faced we had one major challenge that we weren't able to overcome.
-        In particular, we had planned in our milestones to do 3D simulations with lattices of cubes. However, after
-        spending exorbitant amounts of time trying to render a new mesh structure, we abandoned this pursuit in
-        favor of more 2D results. A suggestion for future improvement of this would be to implement 3D strucutres
-        as the current fracture code could translate directly to a correctly implemented mesh.
-    </p>
-    <p>
-        As well, a lesson we learned along the way was just how important random mesh structures are for realism.
-        Our experiments that didn't have random thresholds looked far less realistic than our experiments with
-        random tears and thresholds. It has proven almost necessary to add randomness to a physical model in order
-        to simulate surface and structural defects.
-    </p>
-
-    <h2>
-        References
-    </h2>
-    <ol>
-        <li>Norton, A., Turk, G., Bacon, B. et al. Animation of fracture by physical modeling. The Visual Computer 7,
-            210–219 (1991). https://doi.org/10.1007/BF01900837</li>
-        <li>Torres L. Fracture Modeling in Computer Graphics. Computers & Graphics 45, 86-100 (2014).
-            https://doi.org/10.1016/j.cag.2014.08.006.</li>
-    </ol>
-
-    <h2>Contributions</h2>
-    <ul>
-        <li>
-            <b>Divi:</b> Divi built the initial fracture methods including reworking the edge and spring data
-            structures to combine as one for easy mesh fracturing, implementing random fracturing and systematic
-            assignment, and implementing the spring and point and spring based fracture methods.
-        </li>
-        <li>
-            <b>Joey:</b> Joey made all of the code infrastructural changes (sphere forces, mesh resistance,
-            shader changes) and implemented the centroid assignment and shard fractures.
-        </li>
-    </ul>
-    <p>
-        Both partners contributed equally overall and the ideas for improvement over the papers came from
-        ideation on both sides.
-    </p>
-
-    <br><br>
-
-
 </body>
 
 </html>
