@@ -6,6 +6,9 @@ using namespace CGL;
 using namespace std;
 
 Vector3D PointMass::normal() {
+  if (!halfedge)
+    return Vector3D(0, 0, 1);
+  
   Vector3D n(0, 0, 0);
 
   Halfedge *start = halfedge;
