@@ -75,7 +75,9 @@
         The modeling assumption used here are that the sphere is accurately modeled as a rigid body.
     </p>
     <p>
-        For the result of this code change see the first figure in the results.
+        Here is an example of the results after this change.
+        <img src="images/frac_no_resis.gif" width="300px" />
+    <figcaption align="middle">Fracture without Mesh Resistance</figcaption>
     </p>
 
     <h4>Mesh Resistance</h4>
@@ -93,7 +95,22 @@
         changes to how collisions are handled and when sphere moments are updated.
     </p>
     <p>
-        The results of this change are in figures 2 and 3 below.
+        The results of this change are here.
+    <div align="middle">
+        <table>
+            <tr>
+                <td>
+                    <img src="images/sphere_bounce.gif" width="300px" />
+                    <figcaption align="middle">Mesh Resisting Sphere</figcaption>
+                </td>
+                <td>
+                    <img src="images/frac_resis.gif" width="300px" />
+                    <figcaption align="middle">Mesh Fracture with Resistance</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+
     </p>
 
     <h4>Shader Changes</h4>
@@ -109,8 +126,11 @@
         seemed to slow down our computers unbearably so, and as a result these examples are not included.
     </p>
     <p>
-        An example image before this code change is seen in Figure 4. Figures 5 and 6 represent successful breaks
-        with the shaders.
+        An example image before this code change is here: <br>
+        <div  align="middle"><img align="middle" src="images/portal.gif" width="300px" /></div>
+        <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
+        <br>
+        You will see more successful breaks with the shaders later on.
     </p>
 
     <h2>Fracture Modeling</h2>
@@ -138,7 +158,8 @@
             </tr>
         </table>
     </div>
-    Overall, we found the best range to be 1.3, 1.8 for most cases. We also noticed that this range was a function of
+    Overall, we found the best range to be around 1.3, 1.8 for most cases. We also noticed that this range was a
+    function of
     the spring constant. It would be interesting to determine a relationship between the two instead of tweaking each
     individually. Instead of this, however, we moved on to more complicated ways of assigning the spring constant.
     </p>
@@ -150,7 +171,7 @@
         For this, we created cloths where there were only one or two columns in the mesh which had fracture
         thresholds. Here is an example:
         <br>
-        <!-- <iframe src='images/middle-tear.mov'></iframe> -->
+        <img align="middle" width=500px src='images/high-res-cloth-tear.gif'></img>
         <br>
         As you can see, the shaders do not have strange holes and the cloth tears in a fairly realistic manner, widening
         the one large tear as the sphere pushes through, instead of creating a small hole in the middle and random ones
@@ -195,10 +216,19 @@
         sometimes left springs hanging alone in the air or produced other strange affects.
         Attempting to remedy these strange affects and correct the shaders, we decided to mark each triangle connected
         to the spring, and mask these fractured triangles within the shaders. This however, did not work as it exposed
-        the triangle mesh structure in the cloth and made it look very unrealistic.
+        the triangle mesh structure in the cloth and made it look very unrealistic. Here is an example:
+        <br>
+        <div align="middle" ><img align="middle"  width=500px src='images/spring-only.png'></img></div>
+        <br>
     </p>
-
     <h4>Point Mass and Spring Fracture</h4>
+    <p>In order to remedy the problems mentioned above, we decided to instead mark any point masses that were connected
+        to a fractured spring. In the shaders, we then masked each triangle that was connected to this point mass. This
+        meant that one spring fracture had a very large footprint on the mesh, which was not ideal, however, this made
+        the cloth much less "triangle-y". The affect of these big holes we mitigated by increasing the resolution of the
+        mesh. Here is an example of a higher resolution mesh with the marked point masses.</p>
+    <img src='images/random-tear-high-res.gif'><img>
+
     <h4>Shard Fracture</h4>
     <p>
         Shard fracture builds off centroid assignment for fracture modeling. Shard fracture can be broken down
@@ -206,7 +236,7 @@
     </p>
     <p>
         The first behavior of shard fracturing is to simply use the thresholds defined by centroid assignment.
-        As a result, it is impossible for springs to fracture unless they lie on the boundary between two 
+        As a result, it is impossible for springs to fracture unless they lie on the boundary between two
         paritions of the mesh. This results in a kind of seam-aligned fracture that may be more realistic for
         materials than the approach of randomly assigning thresholds. Essentially the difference here is between
         more realistic random tears versus less realistic random holes.
@@ -215,7 +245,7 @@
         A visualization of this random tearing is below
     </p>
     <div align="middle">
-        <img src="images/Shard_Seam.gif" width="300px"/>
+        <img src="images/Shard_Seam.gif" width="300px" />
         <figcaption align="middle">Shard Seam Behavior</figcaption>
     </div>
     <p>
@@ -229,7 +259,7 @@
         A visualization of the sharded fracture is seen below.
     </p>
     <div align="middle">
-        <img src="images/shard_shard.gif" width="300px"/>
+        <img src="images/shard_shard.gif" width="300px" />
         <figcaption align="middle">Sharded Fracture Behavior</figcaption>
     </div>
     <p>
@@ -280,34 +310,7 @@
     </p>
 
     <br><br>
-    <h2>Results</h2>
-    <p>Below are our results, open in a new tab if they load slow.</p>
-    <div align="middle">
-        <table>
-            <tr>
-                <td>
-                    <img src="images/frac_no_resis.gif" width="300px" />
-                    <figcaption align="middle">Figure 1: Fracture without Mesh Resistance</figcaption>
-                </td>
-                <td>
-                    <img src="images/sphere_bounce.gif" width="300px" />
-                    <figcaption align="middle">Figure 2: Mesh Resisting Sphere</figcaption>
-                </td>
-                <td>
-                    <img src="images/frac_resis.gif" width="300px" />
-                    <figcaption align="middle">Figure 3: Mesh Fracture with Resistance</figcaption>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <img src="images/portal.gif" width="300px" />
-                    <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
-                </td>
-            </tr>
-        </table>
-    </div>
-    
-    <br><br>
+
 
 </body>
 
