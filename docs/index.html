@@ -115,7 +115,23 @@
     <h4>Systematic Assignment</h4>
     <h4>Centroid Assignment</h4>
     <p>
-        
+        One addition off of the papers we based this project on is centroid assignment. The goal of centroid 
+        assignment is to break the cloth into shards or chunks for more chunked fracture than
+        the previous implementations gave.
+    </p>
+    <p>
+        The changes needed to implement this threshold assignment begin before mesh creation. First, we choose
+        $k$ centroids at random across the mesh (where $k$ is a configurable parameter). We experimented with two 
+        random centroid methods; choosing uniformly at random across the mesh and choosing from a gaussian centered
+        at the center of the mesh and capped at the edges.
+    </p>
+    <p>
+        Once the centroids are determined, we cluster the pointmasses according to nearest centroid, that is 
+        $$cluster_x = \text{argmin}_i ||c_i - x||_2$$
+        where $c_i$ is the ith centroid and $x$ is the pointmass in question. The threshold for each spring is
+        then randomly chosen as in the previous two methods if the spring's pointmasses are in different clusters
+        and the threshold is set to infinity for springs whose points lie in the same cluster. As a result, when the
+        cloth fractures it shatters into shards. See the section on <b>Shard Fracture</b> for results.
     </p>
 
     <h3>Fracture Behavior</h3>
