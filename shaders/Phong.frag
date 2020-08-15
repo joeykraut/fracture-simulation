@@ -8,6 +8,7 @@ uniform vec3 u_light_intensity;
 in vec4 v_position;
 in vec4 v_normal;
 in vec2 v_uv;
+in float v_mask;
 
 out vec4 out_color;
 
@@ -30,5 +31,6 @@ void main() {
 
   out_color.rgb = u_color.xyz * (ambientL + diffuseL + specularL);
   out_color.a = 1;
+  out_color = v_mask * out_color;
 }
 

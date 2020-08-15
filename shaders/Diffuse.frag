@@ -16,6 +16,7 @@ uniform sampler2D u_texture_1;
 // These are the inputs which are the outputs of the vertex shader.
 in vec4 v_position;
 in vec4 v_normal;
+in float v_mask;
 
 // This is where the final pixel color is output.
 // Here, we are only interested in the first 3 dimensions (xyz).
@@ -28,4 +29,5 @@ void main() {
   float radius2 = length(v_position.xyz - u_light_pos) * length(v_position.xyz - u_light_pos);
   out_color.xyz = u_color.xyz * (u_light_intensity / radius2) * max(0, dot(v_normal.xyz, normalize(u_light_pos - v_position.xyz)));
   out_color.a = 1;
+  out_color = v_mask * out_color;
 }

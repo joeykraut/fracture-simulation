@@ -13,11 +13,13 @@ in vec4 in_position;
 in vec4 in_normal;
 in vec4 in_tangent;
 in vec2 in_uv;
+in float in_mask;
 
 out vec4 v_position;
 out vec4 v_normal;
 out vec2 v_uv;
 out vec4 v_tangent;
+out float v_mask;
 
 float h(vec2 uv) {
   // You may want to use this helper function...
@@ -26,7 +28,7 @@ float h(vec2 uv) {
 
 void main() {
   vec4 pos = in_position + in_normal * h(in_uv) * u_height_scaling;
-  
+  v_mask = in_mask;
   v_position = u_model * pos;
   v_normal = normalize(u_model * in_normal);
   v_uv = in_uv;
