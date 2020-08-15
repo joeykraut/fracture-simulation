@@ -1,7 +1,7 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-#define CUBE_DIM 50
+#define CUBE_DIM .5
 
 #include <unordered_set>
 #include <unordered_map>
@@ -51,10 +51,12 @@ public:
                 vector<CollisionObject *> *collision_objects);
 
   void reset();
-
+  void createCube(Vector3D left, vector<SingleCube *> *cubies);
   void build_spatial_map();
   void self_collide(PointMass &pm, double simulation_steps);
   float hash_position(Vector3D pos);
+  
+  void render(GLShader &shader);
 
   double getRandomFractureThresh(double min, double max);
   void setFractureThreshold();
@@ -75,7 +77,6 @@ public:
   vector<vector<int>> pinned;
   vector<EdgeSpring> springs;
   CubeMesh *cubeMesh{};
-  Halfedge *halfedge{};
 
 private:
   void buildCubeMesh();

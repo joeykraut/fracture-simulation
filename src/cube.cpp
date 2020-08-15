@@ -35,23 +35,54 @@ Cube::~Cube() {
 // =========================
 // ===== Mesh Creation =====
 // =========================
-
-void Cube::buildCubeMesh() {
+void Cube::createCube(Vector3D left, vector<SingleCube *> *cubies) {
     // Create all the point masses
-    PointMass *vertex_a = new PointMass(Vector3D(0.0, 0.0, 0.0), true);
-    PointMass *vertex_b = new PointMass(Vector3D(0.0, 0.0, CUBE_DIM), true);
-    PointMass *vertex_c = new PointMass(Vector3D(0.0, CUBE_DIM, 0.0), true);
-    PointMass *vertex_d = new PointMass(Vector3D(0.0, CUBE_DIM, CUBE_DIM), true);
-    PointMass *vertex_e = new PointMass(Vector3D(CUBE_DIM, 0.0, 0.0), true);
-    PointMass *vertex_f = new PointMass(Vector3D(CUBE_DIM, 0.0, CUBE_DIM), true);
-    PointMass *vertex_g = new PointMass(Vector3D(CUBE_DIM, CUBE_DIM, 0.0), true);
-    PointMass *vertex_h = new PointMass(Vector3D(CUBE_DIM, CUBE_DIM, CUBE_DIM), true);
+    PointMass *vertex_a = new PointMass(left, false);
+    PointMass *vertex_b = new PointMass(Vector3D(left.x, left.y, left.z + CUBE_DIM), false);
+    PointMass *vertex_c = new PointMass(Vector3D(left.x, left.y + CUBE_DIM, left.z), false);
+    PointMass *vertex_d = new PointMass(Vector3D(left.x, left.y + CUBE_DIM, left.z + CUBE_DIM), false);
+    PointMass *vertex_e = new PointMass(Vector3D(left.x + CUBE_DIM, left.y, left.z), false);
+    PointMass *vertex_f = new PointMass(Vector3D(left.x + CUBE_DIM, left.y, left.z + CUBE_DIM), false);
+    PointMass *vertex_g = new PointMass(Vector3D(left.x + CUBE_DIM, left.y + CUBE_DIM, left.z), false);
+    PointMass *vertex_h = new PointMass(Vector3D(left.x + CUBE_DIM, left.y + CUBE_DIM, left.z + CUBE_DIM), false);
+
+    point_masses.push_back(*vertex_a);    
+    point_masses.push_back(*vertex_b);
+    point_masses.push_back(*vertex_c); 
+    point_masses.push_back(*vertex_d);
+    point_masses.push_back(*vertex_e);
+    point_masses.push_back(*vertex_f);    
+    point_masses.push_back(*vertex_g);
+    point_masses.push_back(*vertex_h);   
 
     // Dummy uv coords
     Vector3D uv(0, 0, 0);
 
     // Add the structural constraints
-    vector<EdgeSpring> springs;
+    vector<EdgeSpring> springs_cube;
+    springs_cube.emplace_back(vertex_a, vertex_b, STRUCTURAL);
+    springs_cube.emplace_back(vertex_b, vertex_d, STRUCTURAL);
+    springs_cube.emplace_back(vertex_d, vertex_c, STRUCTURAL);
+    springs_cube.emplace_back(vertex_c, vertex_a, STRUCTURAL);
+
+    springs_cube.emplace_back(vertex_a, vertex_e, STRUCTURAL);
+    springs_cube.emplace_back(vertex_b, vertex_f, STRUCTURAL);
+    springs_cube.emplace_back(vertex_c, vertex_g, STRUCTURAL);
+    springs_cube.emplace_back(vertex_d, vertex_h, STRUCTURAL);
+
+    springs_cube.emplace_back(vertex_e, vertex_f, STRUCTURAL);
+    springs_cube.emplace_back(vertex_f, vertex_h, STRUCTURAL);
+    springs_cube.emplace_back(vertex_h, vertex_g, STRUCTURAL);
+    springs_cube.emplace_back(vertex_g, vertex_e, STRUCTURAL);
+
+    // Add the face constraints
+    springs_cube.emplace_back(vertex_a, vertex_g, BENDING);
+    springs_cube.emplace_back(vertex_a, vertex_d, BENDING);
+    springs_cube.emplace_back(vertex_b, vertex_h, BENDING);
+    springs_cube.emplace_back(vertex_h, vertex_e, BENDING);
+    springs_cube.emplace_back(vertex_a, vertex_f, BENDING);
+    springs_cube.emplace_back(vertex_c, vertex_h, BENDING);
+
     springs.emplace_back(vertex_a, vertex_b, STRUCTURAL);
     springs.emplace_back(vertex_b, vertex_d, STRUCTURAL);
     springs.emplace_back(vertex_d, vertex_c, STRUCTURAL);
@@ -101,15 +132,44 @@ void Cube::buildCubeMesh() {
     // Face: ABEF
     triangles.push_back(new Triangle(vertex_a, vertex_b, vertex_f, uv, uv, uv));
     triangles.push_back(new Triangle(vertex_a, vertex_e, vertex_f, uv, uv, uv));
+    SingleCube *singleCube = new SingleCube(triangles, springs_cube);
+    cubies->push_back(singleCube);
+}
 
+void Cube::buildCubeMesh() { 
     // Build the cube mesh
-    SingleCube *singleCube = new SingleCube(triangles, springs);
     vector<SingleCube *> cubies;
-    cubies.push_back(singleCube);
+    createCube(Vector3D(5, 0, 0), &cubies);
 
     this->cubeMesh = new CubeMesh(cubies);
     // Build add_cube_above and add_cube_right
 }
+
+// =========================
+// ===== Render Logic =====
+// =========================
+
+void Cube::render(GLShader &shader) {
+    MatrixXf positions;
+
+    // Cube
+    positions = MatrixXf(4, springs.size() * 2);
+
+    // Loop over and add all the point masses
+    int si = 0;
+    for (auto spring : springs) {
+      Vector3D pa = spring.pm_a->position;
+      Vector3D pb = spring.pm_b->position;
+
+      positions.col(si) << pa.x, pa.y, pa.z, 1.0;
+      positions.col(si + 1) << pb.x, pb.y, pb.z, 1.0;
+      si += 2;
+    }
+  shader.uploadAttrib("in_position", positions, false);
+
+  shader.drawArray(GL_LINES, 0, springs.size() * 2);
+}
+
 
 // ============================
 // ===== Simulation Logic =====
@@ -118,7 +178,8 @@ void Cube::buildCubeMesh() {
 void Cube::simulate(double frames_per_sec, double simulation_steps, CubeParameters *cp,
                     vector<Vector3D> external_accelerations, vector<CollisionObject *> *collision_objects) {
 
-  double mass = width * height * cp->density / num_width_points / num_height_points;
+  
+  double mass = 100;
   double delta_t = 1.0f / frames_per_sec / simulation_steps;
 
   // Clear collision object forces
@@ -164,13 +225,10 @@ void Cube::simulate(double frames_per_sec, double simulation_steps, CubeParamete
     Vector3D new_position = p->position + ((1. - (cp->damping / 100.)) * (p->position - p->last_position)) + (accel * (delta_t * delta_t));
     p->last_position = p->position;
     p->position = new_position;
-  }
   
+    cout << p->position << endl;
+    cout << p->last_position << endl;
 
-  // Handle self-collisions.
-  build_spatial_map();
-  for (int i = 0; i < point_masses.size(); i++) {
-    self_collide(point_masses[i], simulation_steps);
   }
 
   // Handle collisions with other primitives.

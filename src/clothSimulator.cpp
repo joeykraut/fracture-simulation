@@ -16,8 +16,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "misc/stb_image.h"
 
-#define CLOTH true
-
 using namespace nanogui;
 using namespace std;
 
@@ -329,6 +327,10 @@ void ClothSimulator::drawContents() {
     break;
   }
 
+  for (Cube *c : *cubes) {
+    c->render(shader);
+  }
+
   for (CollisionObject *co : *collision_objects) {
     co->render(shader);
   }
@@ -336,95 +338,49 @@ void ClothSimulator::drawContents() {
 
 void ClothSimulator::drawWireframe(GLShader &shader) {
     MatrixXf  positions, normals;
-    int num_springs;
+    int num_springs = 20;
 
-    if (CLOTH) {
-      int num_structural_springs =
-          2 * cloth->num_width_points * cloth->num_height_points -
-          cloth->num_width_points - cloth->num_height_points;
-      int num_shear_springs =
-          2 * (cloth->num_width_points - 1) * (cloth->num_height_points - 1);
-      int num_bending_springs = num_structural_springs - cloth->num_width_points -
-                                cloth->num_height_points;
+  int num_structural_springs =
+      2 * cloth->num_width_points * cloth->num_height_points -
+      cloth->num_width_points - cloth->num_height_points;
+  int num_shear_springs =
+      2 * (cloth->num_width_points - 1) * (cloth->num_height_points - 1);
+  int num_bending_springs = num_structural_springs - cloth->num_width_points -
+                            cloth->num_height_points;
 
-      num_springs = cp->enable_structural_constraints * num_structural_springs +
-                        cp->enable_shearing_constraints * num_shear_springs +
-                        cp->enable_bending_constraints * num_bending_springs;
+  num_springs = cp->enable_structural_constraints * num_structural_springs +
+                    cp->enable_shearing_constraints * num_shear_springs +
+                    cp->enable_bending_constraints * num_bending_springs;
 
-      // Add the cube lattice spring edges
-      for (auto cube : *cubes) {
-          for (auto cubie : cube->cubeMesh->single_cubes) {
-              num_springs += cubie->edges.size();
-          }
-      }
+  positions = MatrixXf(4, num_springs * 2);
 
-      positions = MatrixXf(4, num_springs * 2);
-      normals = MatrixXf(4, num_springs * 2);
+  // Draw springs as lines
 
-      // Draw springs as lines
+  int si = 0;
 
-      int si = 0;
+  for (int i = 0; i < cloth->springs.size(); i++) {
+    EdgeSpring s = cloth->springs[i];
 
-      for (int i = 0; i < cloth->springs.size(); i++) {
-        EdgeSpring s = cloth->springs[i];
-
-        if ((s.spring_type == STRUCTURAL && !cp->enable_structural_constraints) ||
-            (s.spring_type == SHEARING && !cp->enable_shearing_constraints) ||
-            (s.spring_type == BENDING && !cp->enable_bending_constraints) ||
-            (s.fractured == true)) {
-          continue;
-        }
-
-        Vector3D pa = s.pm_a->position;
-        Vector3D pb = s.pm_b->position;
-
-        Vector3D na = s.pm_a->normal();
-        Vector3D nb = s.pm_b->normal();
-
-        positions.col(si) << pa.x, pa.y, pa.z, 1.0;
-        positions.col(si + 1) << pb.x, pb.y, pb.z, 1.0;
-
-        normals.col(si) << na.x, na.y, na.z, 0.0;
-        normals.col(si + 1) << nb.x, nb.y, nb.z, 0.0;
-
-        si += 2;
-      }
-    } else {
-        // Cube
-        unordered_set<PointMass, PointMassHash> pointmass_set;
-
-        // Loop over and add all the point masses
-        CubeMesh *cubeMesh = cubes->at(0)->cubeMesh;
-        for (auto cubie : cubeMesh->single_cubes) {
-            for (auto spring : cubie->edges) {
-                pointmass_set.insert(*spring.pm_a);
-                pointmass_set.insert(*spring.pm_b);
-            }
-        }
-
-        pointmass_set = {new PointMass(Vector3D(0), true), new PointMass(Vector3D(1.0, 0.0, 0.0), true)};
-
-        positions = MatrixXf(4, pointmass_set.size());
-        normals = MatrixXf(4, pointmass_set.size());
-
-        int i = 0;
-        for (auto pm : pointmass_set) {
-            Vector3D normal = Vector3D(0.0, 1.0, 0.0); //pm.normal();
-
-            positions.col(i) << pm.position.x, pm.position.y, pm.position.z, 1.0;
-            normals.col(i) << normal.x, normal.y, normal.z, 1.0;
-
-            i += 1;
-        }
+    if ((s.spring_type == STRUCTURAL && !cp->enable_structural_constraints) ||
+        (s.spring_type == SHEARING && !cp->enable_shearing_constraints) ||
+        (s.spring_type == BENDING && !cp->enable_bending_constraints) ||
+        (s.fractured == true)) {
+      continue;
     }
 
-//    for (int i = 0; i < positions.cols(); i++) {
-//        cout << "I = " << i << "\n" << positions.col(i) << endl;
-//    }
-  shader.setUniform("u_color", nanogui::Color(1.0f, 1.0f, 1.0f, 1.0f), false);
+    Vector3D pa = s.pm_a->position;
+    Vector3D pb = s.pm_b->position;
+
+    positions.col(si) << pa.x, pa.y, pa.z, 1.0;
+    positions.col(si + 1) << pb.x, pb.y, pb.z, 1.0;
+
+    si += 2;
+    }
+    
+  // shader.setUniform("u_color", nanogui::Color(1.0f, 1.0f, 1.0f, 1.0f), false);
   shader.uploadAttrib("in_position", positions, false);
   // Commented out: the wireframe shader does not have this attribute
-  shader.uploadAttrib("in_normal", normals);
+  // shader.uploadAttrib("in_normal", normals);
 
   shader.drawArray(GL_LINES, 0, num_springs * 2);
 }
