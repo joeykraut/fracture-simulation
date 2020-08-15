@@ -138,35 +138,45 @@
     <h4>Spring Only Fracture</h4>
     <h4>Point Mass and Spring Fracture</h4>
     <h4>Shard Fracture</h4>
-
-    
-    <br><br>
-    <h2>Results</h2>
-    <p>Below are our results, open in a new tab if they load slow.</p>
+    <p>
+        Shard fracture builds off centroid assignment for fracture modeling. Shard fracture can be broken down
+        into two behaviors.
+    </p>
+    <p>
+        The first behavior of shard fracturing is to simply use the thresholds defined by centroid assignment.
+        As a result, it is impossible for springs to fracture unless they lie on the boundary between two 
+        paritions of the mesh. This results in a kind of seam-aligned fracture that may be more realistic for
+        materials than the approach of randomly assigning thresholds. Essentially the difference here is between
+        more realistic random tears versus less realistic random holes.
+    </p>
+    <p>
+        A visualization of this random tearing is below
+    </p>
     <div align="middle">
-        <table>
-          <tr>
-            <td>
-            <img src="images/frac_no_resis.gif" width="300px"/>
-            <figcaption align="middle">Figure 1: Fracture without Mesh Resistance</figcaption>
-            </td>
-            <td>
-                <img src="images/sphere_bounce.gif" width="300px"/>
-                <figcaption align="middle">Figure 2: Mesh Resisting Sphere</figcaption>
-            </td>
-            <td>
-                <img src="images/frac_resis.gif" width="300px"/>
-                <figcaption align="middle">Figure 3: Mesh Fracture with Resistance</figcaption>
-            </td>
-          </tr>
-          <tr>
-            <td>
-            <img src="images/portal.gif" width="300px"/>
-            <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
-            </td>
-          </tr>
-        </table>
+        <img src="images/Shard_Seam.gif" width="300px"/>
+        <figcaption align="middle">Shard Seam Behavior</figcaption>
     </div>
+    <p>
+        The second behavior shard fracture implements is sharded fracture. That is, completely fracturing the
+        shards into clusters. This is useful for shattering things like glass and plastics. To implement this
+        effect we simply unpin all vertices and remove all edges that cross clusters upon initial collision.
+        Of course, this is missing some realism, but the fracturing into shards - the key contribution - is
+        achieved.
+    </p>
+    <p>
+        A visualization of the sharded fracture is seen below.
+    </p>
+    <div align="middle">
+        <img src="images/shard_shard.gif" width="300px"/>
+        <figcaption align="middle">Sharded Fracture Behavior</figcaption>
+    </div>
+    <p>
+        One problem we encountered while rendering this simulation was that the cloth would stick to the sphere
+        as a result of the naive sphere intersection code. To remedy this, we changed the code to conform each
+        spring to stay the same length after each timestep instead of 1.1 times its length. This pulled the
+        vertices away from the spring and helped our fracture look better.
+    </p>
+    <br><br>
 
 </body>
 
