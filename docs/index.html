@@ -19,10 +19,17 @@
         h4 {
             font-family: 'Source Sans Pro', sans-serif;
         }
+
+        code {
+            background-color: lightgrey;
+        }
     </style>
     <title>CS 184 Fracture Simulation</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});</script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML">
+    </script>
 </head>
 
 <body>
@@ -31,45 +38,107 @@
     <h2 align="middle">Divi Schmidt and Joey Kraut</h2>
     <br><br>
 
-    <h2>What we need</h2>
-    <div>
-        Abstract<br><br>
-        A paragraph summary of the entire project.<br><br>
-        Technical approach<br><br>
-        A 1-2 page summary of your technical approach, techniques used, algorithms implemented, etc. (use references to
-        papers or other resources for further detail). Highlight how your approach varied from the references used (did
-        you implement a subset, or did you change or enhance anything), the unique decisions you made and why.<br><br>
-        A description of problems encountered and how you tackled them.<br><br>
-        A description of lessons learned.<br><br>
-        Results<br><br>
-        Your final images, animations, video of your system (whichever is relevant). You can include results that you
-        think show off what you built but that you did not have time to go over on presentation day.<br><br>
-        References<br><br>
-        Contributions from each team member<br><br>
-        A clear description of the work contributed by each team member.<br><br>
-    </div>
-    <br><br>
-
     <h2>Abstract</h2>
-    <p>In this project, we expanded the cloth simulation project to include fracture simulation for 2D and 3D objects.
-        First, we augmented the spring and mass model for the 2D cloth by adding a max length value to the
-        springs. If exceeded, we broke the spring. We experimented with a couple methods for assigning these max length
-        values, additionally experimenting with different rules for rendering the mesh once these fractures have
-        occurred. This same framework was then expanded to model 3D objects. This came with more advanced rules for
-        creating spring mass models, creating these triangle meshes, and breaking this model when fractured. TODO add
-        more about 3D
-    </p>
-    <br><br>
-
-    <h1>Technical Approach</h1>
     <p>
-        The main paper that we used for this project was
-        <a href="https://link.springer.com/article/10.1007/BF01900837">this paper</a> as it fit nicely within the spring
-        mass model we designed in project 4.
-        
+        This project's focus was on extending the cloth simulation of project 4 to simulate materials as they
+        fracture and break in different ways. The project consisted of two primary components; code infrastructure
+        changes and fracture modeling. Much of the work spent on this project involved making changes to underlying
+        structure of the project like enabling forces to act on spheres, introducing resistive elastic forces from
+        a mesh on a sphere, and modifying the shaders to enable fractured appearances. On the fracture modeling side,
+        we implemented an approach from a paper we found which generated realistic looking tears. We then added our
+        own ideas to this approach for more interesting tearing and fracturing effects.
     </p>
-    <br><br>
 
+    <h2>Technical Approach</h2>
+    <h3>Code Infrastructure Changes</h3>
+    <h4>Enabling Forces on Spheres</h4>
+    <p>
+        The first code change necessary to the simulation backbone was to enable spheres to move as forces (e.g. gravity)
+        are applied. This was necessary so that we could collide spheres with pinned meshes to analyze stretches and tears.
+    </p>
+    <p>
+        To make this code change, we simply added a <code>simulate</code> method to the <code>collisionObject</code>
+        class that is called for every collision object in the same loop that the cloth's <code>simulate</code> is.
+        As well, we added a <code>Vector3D</code> force vector that accumulates forces applied to a sphere. The 
+        sphere also maintains its first two moments so that we can update its position and velocity as in the
+        pointmass mesh. At every simulation step, we update the sphere as a rigid body around its center which 
+        moves according to the following equations $x_t$
+        $$\begin{align} v_t & = k_dv_t + \Delta_t f / m \\ x_t & = x_{t-1} + \Delta_t * v_t \end{align}$$
+        where $v$ is velocity, $x$ is position, $k_d$ is a damping coefficient, $f$ is the accumulated force
+        vector, and $m$ is the sphere mass.
+    </p>
+    <p>
+        The modeling assumption used here are that the sphere is accurately modeled as a rigid body.
+    </p>
+    <p>
+        For the result of this code change see the first figure in the results.
+    </p>
+
+    <h4>Mesh Resistance</h4>
+    <p>
+        The second code change to enable realistic fracturing was to make the mesh resist the sphere by applying
+        an opposing force to the sphere. To enable the cloth to apply a resistive force, we added a constant $k_r$
+        to allow us to control the "stretchiness" of the mesh and added the following force point by point on 
+        a collision to the sphere
+        $$k_r||x_a - x_b|| * \frac{c - x_b}{||c - x_b||}$$
+        where $x_a$ is the position of a point before sphere displacement, $x_b$ is the position of the point after
+        sphere displacement, and $c$ is the center of the sphere. 
+    </p>
+    <p>
+        Overall this code change involved a small change to implement the equation above and a few larger structural
+        changes to how collisions are handled and when sphere moments are updated.
+    </p>
+    <p>
+        The results of this change are in figures 2 and 3 below.
+    </p>
+
+    <h4>Shader Changes</h4>
+    <p>
+        The third major code change we had to make was to enable shaders to show the breaking. To make this change,
+        we decided to break in units of triangles for the shader. If a spring is broken, it is marked broken along
+        with its point masses. We use this flag as a mask variable to each of the shaders; the shaders set the color
+        of a vertex to $(0, 0, 0, 0)$ if it has been broken.
+    </p>
+    <p>
+        The result of this is that the shaders now show holes in the mesh. Although the examples given below are
+        jagged, you can image with a higher resolution mesh the breaks appear more fine. Higher resolution meshes
+        seemed to slow down our computers unbearably so, and as a result these examples are not included.
+    </p>
+    <p>
+        An example image before this code change is seen in Figure 4. Figures 5 and 6 represent successful breaks
+        with the shaders.
+    </p>
+
+    <h3></h3>
+
+    
+    <br><br>
+    <h2>Results</h2>
+    <p>Below are our results, open in a new tab if they load slow.</p>
+    <div align="middle">
+        <table>
+          <tr>
+            <td>
+            <img src="images/frac_no_resis.gif" width="300px"/>
+            <figcaption align="middle">Figure 1: Fracture without Mesh Resistance</figcaption>
+            </td>
+            <td>
+                <img src="images/sphere_bounce.gif" width="300px"/>
+                <figcaption align="middle">Figure 2: Mesh Resisting Sphere</figcaption>
+            </td>
+            <td>
+                <img src="images/frac_resis.gif" width="300px"/>
+                <figcaption align="middle">Figure 3: Mesh Fracture with Resistance</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+            <img src="images/portal.gif" width="300px"/>
+            <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
+            </td>
+          </tr>
+        </table>
+    </div>
 
 </body>
 
