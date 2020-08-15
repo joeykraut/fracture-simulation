@@ -59,7 +59,30 @@ void Cube::createCube(Vector3D left, vector<SingleCube *> *cubies) {
     Vector3D uv(0, 0, 0);
 
     // Add the structural constraints
-    vector<EdgeSpring> springs;
+    vector<EdgeSpring> springs_cube;
+    springs_cube.emplace_back(vertex_a, vertex_b, STRUCTURAL);
+    springs_cube.emplace_back(vertex_b, vertex_d, STRUCTURAL);
+    springs_cube.emplace_back(vertex_d, vertex_c, STRUCTURAL);
+    springs_cube.emplace_back(vertex_c, vertex_a, STRUCTURAL);
+
+    springs_cube.emplace_back(vertex_a, vertex_e, STRUCTURAL);
+    springs_cube.emplace_back(vertex_b, vertex_f, STRUCTURAL);
+    springs_cube.emplace_back(vertex_c, vertex_g, STRUCTURAL);
+    springs_cube.emplace_back(vertex_d, vertex_h, STRUCTURAL);
+
+    springs_cube.emplace_back(vertex_e, vertex_f, STRUCTURAL);
+    springs_cube.emplace_back(vertex_f, vertex_h, STRUCTURAL);
+    springs_cube.emplace_back(vertex_h, vertex_g, STRUCTURAL);
+    springs_cube.emplace_back(vertex_g, vertex_e, STRUCTURAL);
+
+    // Add the face constraints
+    springs_cube.emplace_back(vertex_a, vertex_g, BENDING);
+    springs_cube.emplace_back(vertex_a, vertex_d, BENDING);
+    springs_cube.emplace_back(vertex_b, vertex_h, BENDING);
+    springs_cube.emplace_back(vertex_h, vertex_e, BENDING);
+    springs_cube.emplace_back(vertex_a, vertex_f, BENDING);
+    springs_cube.emplace_back(vertex_c, vertex_h, BENDING);
+
     springs.emplace_back(vertex_a, vertex_b, STRUCTURAL);
     springs.emplace_back(vertex_b, vertex_d, STRUCTURAL);
     springs.emplace_back(vertex_d, vertex_c, STRUCTURAL);
@@ -109,7 +132,7 @@ void Cube::createCube(Vector3D left, vector<SingleCube *> *cubies) {
     // Face: ABEF
     triangles.push_back(new Triangle(vertex_a, vertex_b, vertex_f, uv, uv, uv));
     triangles.push_back(new Triangle(vertex_a, vertex_e, vertex_f, uv, uv, uv));
-    SingleCube *singleCube = new SingleCube(triangles, springs);
+    SingleCube *singleCube = new SingleCube(triangles, springs_cube);
     cubies->push_back(singleCube);
 }
 
@@ -130,29 +153,21 @@ void Cube::render(GLShader &shader) {
     MatrixXf positions;
 
     // Cube
-    int positions_size = 0;
-    for (auto cubie : cubeMesh->single_cubes) {
-        for (auto spring : cubie->edges) {
-          positions_size++;
-        }
-    }
-    positions = MatrixXf(4, positions_size * 2);
+    positions = MatrixXf(4, springs.size() * 2);
 
     // Loop over and add all the point masses
     int si = 0;
-    for (auto cubie : cubeMesh->single_cubes) {
-        for (auto spring : cubie->edges) {
-          Vector3D pa = spring.pm_a->position;
-          Vector3D pb = spring.pm_b->position;
+    for (auto spring : springs) {
+      Vector3D pa = spring.pm_a->position;
+      Vector3D pb = spring.pm_b->position;
 
-          positions.col(si) << pa.x, pa.y, pa.z, 1.0;
-          positions.col(si + 1) << pb.x, pb.y, pb.z, 1.0;
-          si += 2;
-        }
+      positions.col(si) << pa.x, pa.y, pa.z, 1.0;
+      positions.col(si + 1) << pb.x, pb.y, pb.z, 1.0;
+      si += 2;
     }
   shader.uploadAttrib("in_position", positions, false);
 
-  shader.drawArray(GL_LINES, 0, positions_size * 2);
+  shader.drawArray(GL_LINES, 0, springs.size() * 2);
 }
 
 
