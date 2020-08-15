@@ -36,6 +36,22 @@
 
 <body>
     <br />
+    <div padding=0px align="center">
+        <table style="width=100%">
+            <tr>
+                <td align="middle">
+                    <iframe src="https://youtu.be/n-IAcCXnehU"></iframe> 
+                </td>
+                <td align="middle">
+                    <img width=500px src='images/shards.png'></img>
+                </td>
+                <td align="middle">
+                    <img width=500px src='images/shattered-glass.png'></img>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br><br>    
     <h1 align="middle">Final Project</h1>
     <h2 align="middle">Divi Schmidt and Joey Kraut</h2>
     <br><br>
@@ -50,6 +66,7 @@
         we implemented an approach from a paper we found which generated realistic looking tears. We then added our
         own ideas to this approach for more interesting tearing and fracturing effects.
     </p>
+    <br><br>
 
     <h2>Fracture Modeling</h2>
     <h3>Assigning Fracture Thresholds</h3>
@@ -81,6 +98,8 @@
     the spring constant. It would be interesting to determine a relationship between the two instead of tweaking each
     individually. Instead of this, however, we moved on to more complicated ways of assigning the spring constant.
     </p>
+    <br><br>
+
     <h4>Systematic Assignment</h4>
     <p>One problem we noticed with the randomized fracture was that any fractures not at the point of contact looked
         very unrealistic when the shaders were enabled. There would be random holes that did not make sense.
@@ -89,19 +108,20 @@
         For this, we created cloths where there were only one or two columns in the mesh which had fracture
         thresholds. Here is an example:
         <br>
-        <img align="middle" width=500px src='images/high-res-cloth-tear.gif'></img>
-        <br>
-        As you can see, the shaders do not have strange holes and the cloth tears in a fairly realistic manner, widening
-        the one large tear as the sphere pushes through, instead of creating a small hole in the middle and random ones
-        on the side.
+    <div align="middle"><img align="middle" width=500px src='images/high-res-cloth-tear.gif'></img></div>
+    <br>
+    As you can see, the shaders do not have strange holes and the cloth tears in a fairly realistic manner, widening
+    the one large tear as the sphere pushes through, instead of creating a small hole in the middle and random ones
+    on the side.
 
-        This was rendered at a very high cloth resolution as this made the cloth tears look less blocky and more
-        realistic. This decreased the speed of the simulation greatly.
+    This was rendered at a very high cloth resolution as this made the cloth tears look less blocky and more
+    realistic. This decreased the speed of the simulation greatly.
 
-        Although these results allow us more freedom to create realistic looking tears, this strategy is not easily
-        expanded. Each new affect has to be implemented by hand, and the parameters have to be tweaked after this to get
-        just the right looking cloth. Thus, we moved on to a more complex strategy that was both random and systematic.
+    Although these results allow us more freedom to create realistic looking tears, this strategy is not easily
+    expanded. Each new affect has to be implemented by hand, and the parameters have to be tweaked after this to get
+    just the right looking cloth. Thus, we moved on to a more complex strategy that was both random and systematic.
     </p>
+    <br><br>
 
 
     <h4>Centroid Assignment</h4>
@@ -124,8 +144,9 @@
         and the threshold is set to infinity for springs whose points lie in the same cluster. As a result, when the
         cloth fractures it shatters into shards. See the section on <b>Shard Fracture</b> for results.
     </p>
+    <br><br>
 
-    <h3>Fracture Behavior</h3>
+    <h2>Fracture Behavior</h2>
     <h4>Spring Only Fracture</h4>
     <p>
         Determining when and where to fracture the springs is only half the battle. After marking a spring as fractured,
@@ -136,16 +157,19 @@
         to the spring, and mask these fractured triangles within the shaders. This however, did not work as it exposed
         the triangle mesh structure in the cloth and made it look very unrealistic. Here is an example:
         <br>
-        <div align="middle" ><img align="middle"  width=500px src='images/spring-only.png'></img></div>
-        <br>
+    <div align="middle"><img align="middle" width=600px src='images/spring-only.png'></img></div>
+    <br>
     </p>
+    <br><br>
+
     <h4>Point Mass and Spring Fracture</h4>
     <p>In order to remedy the problems mentioned above, we decided to instead mark any point masses that were connected
         to a fractured spring. In the shaders, we then masked each triangle that was connected to this point mass. This
         meant that one spring fracture had a very large footprint on the mesh, which was not ideal, however, this made
         the cloth much less "triangle-y". The affect of these big holes we mitigated by increasing the resolution of the
         mesh. Here is an example of a higher resolution mesh with the marked point masses.</p>
-    <img src='images/random-tear-high-res.gif'><img>
+    <div align="middle"><img src='images/random-tear-high-res.gif'><img></div>
+    <br><br>
 
     <h4>Shard Fracture</h4>
     <p>
@@ -186,9 +210,9 @@
         spring to stay the same length after each timestep instead of 1.1 times its length. This pulled the
         vertices away from the sphere and helped our fracture look better.
     </p>
+    <br><br>
 
-    <h2>Technical Approach</h2>
-    <h3>Code Infrastructure Changes</h3>
+    <h2>Code Infrastructure Changes</h2>
     <h4>Enabling Forces on Spheres</h4>
     <p>
         The first code change necessary to the simulation backbone was to enable spheres to move as forces (e.g.
@@ -212,8 +236,8 @@
     </p>
     <p>
         Here is an example of the results after this change.
-        <img src="images/frac_no_resis.gif" width="300px" />
-    <figcaption align="middle">Fracture without Mesh Resistance</figcaption>
+        <divalign="middle"><img src="images/frac_no_resis.gif" width="300px" /></div>
+            <figcaption align="middle">Fracture without Mesh Resistance</figcaption>
     </p>
 
     <h4>Mesh Resistance</h4>
@@ -248,7 +272,6 @@
     </div>
 
     </p>
-
     <h4>Shader Changes</h4>
     <p>
         The third major code change we had to make was to enable shaders to show the breaking. To make this change,
@@ -263,12 +286,18 @@
     </p>
     <p>
         An example image before this code change is here: <br>
-        <div  align="middle"><img align="middle" src="images/portal.gif" width="300px" /></div>
-        <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
-        <br>
+    <div align="middle"><img align="middle" src="images/portal.gif" width="300px" /></div>
+    <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
+    <br>
+    <br>
+    Here is an example of our final working shaders.
+    <br>
+    <br>
+    <div align="middle"><iframe src="https://youtu.be/Q42znTAVZHw"></iframe>    </div>
+    <figcaption align="middle">The cloth. Random thresholds and high res.</figcaption>
+    <br>
     </p>
-
-    <h3>Other Challenges and Lessons Learned</h3>
+    <h2>Other Challenges and Lessons Learned</h2>
     <p>
         Apart from the challenges and problems faced we had one major challenge that we weren't able to overcome.
         In particular, we had planned in our milestones to do 3D simulations with lattices of cubes. However, after
@@ -287,8 +316,10 @@
         References
     </h2>
     <ol>
-        <li>Norton, A., Turk, G., Bacon, B. et al. Animation of fracture by physical modeling. The Visual Computer 7, 210–219 (1991). https://doi.org/10.1007/BF01900837</li>
-        <li>Torres L. Fracture Modeling in Computer Graphics. Computers & Graphics 45, 86-100 (2014). https://doi.org/10.1016/j.cag.2014.08.006.</li>
+        <li>Norton, A., Turk, G., Bacon, B. et al. Animation of fracture by physical modeling. The Visual Computer 7,
+            210–219 (1991). https://doi.org/10.1007/BF01900837</li>
+        <li>Torres L. Fracture Modeling in Computer Graphics. Computers & Graphics 45, 86-100 (2014).
+            https://doi.org/10.1016/j.cag.2014.08.006.</li>
     </ol>
 
     <h2>Contributions</h2>

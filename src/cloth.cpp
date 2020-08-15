@@ -9,12 +9,12 @@
 #include "collision/sphere.h"
 
 // Tolerances
-#define TOL_MIN 1.1
-#define TOL_MAX 1.3
+#define TOL_MIN 2.0
+#define TOL_MAX 2.9
 
 #define SHARDS 50
-#define SHARDED true 
-#define BRITTLE true
+#define SHARDED false 
+#define BRITTLE false
 
 using namespace std;
 
@@ -579,9 +579,9 @@ void Cloth::unpin_all() {
         return;
     }
 
-    for (auto &vertex : point_masses) {
-        vertex.pinned = false;
-    }
+    // for (auto &vertex : point_masses) {
+    //     vertex.pinned = false;
+    // }
 
     // Fracture all cross shard springs
     for (auto &spring : springs) {
