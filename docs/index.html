@@ -150,7 +150,7 @@
         For this, we created cloths where there were only one or two columns in the mesh which had fracture
         thresholds. Here is an example:
         <br>
-        <iframe src='images/middle-tear.mov'></iframe>
+        <!-- <iframe src='images/middle-tear.mov'></iframe> -->
         <br>
         As you can see, the shaders do not have strange holes and the cloth tears in a fairly realistic manner, widening
         the one large tear as the sphere pushes through, instead of creating a small hole in the middle and random ones
@@ -188,6 +188,16 @@
 
     <h3>Fracture Behavior</h3>
     <h4>Spring Only Fracture</h4>
+    <p>
+        Determining when and where to fracture the springs is only half the battle. After marking a spring as fractured,
+        we have a lot of freedom to determine the behavior of the mesh and the rendering. Our first strategy was to make
+        each spring dissapear after it was fractured. This, as we soon learned, only worked for the wireframe, and
+        sometimes left springs hanging alone in the air or produced other strange affects.
+        Attempting to remedy these strange affects and correct the shaders, we decided to mark each triangle connected
+        to the spring, and mask these fractured triangles within the shaders. This however, did not work as it exposed
+        the triangle mesh structure in the cloth and made it look very unrealistic.
+    </p>
+
     <h4>Point Mass and Spring Fracture</h4>
     <h4>Shard Fracture</h4>
 
