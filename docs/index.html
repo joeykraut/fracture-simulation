@@ -51,88 +51,6 @@
         own ideas to this approach for more interesting tearing and fracturing effects.
     </p>
 
-    <h2>Technical Approach</h2>
-    <h3>Code Infrastructure Changes</h3>
-    <h4>Enabling Forces on Spheres</h4>
-    <p>
-        The first code change necessary to the simulation backbone was to enable spheres to move as forces (e.g.
-        gravity)
-        are applied. This was necessary so that we could collide spheres with pinned meshes to analyze stretches and
-        tears.
-    </p>
-    <p>
-        To make this code change, we simply added a <code>simulate</code> method to the <code>collisionObject</code>
-        class that is called for every collision object in the same loop that the cloth's <code>simulate</code> is.
-        As well, we added a <code>Vector3D</code> force vector that accumulates forces applied to a sphere. The
-        sphere also maintains its first two moments so that we can update its position and velocity as in the
-        pointmass mesh. At every simulation step, we update the sphere as a rigid body around its center which
-        moves according to the following equations $x_t$
-        $$\begin{align} v_t & = k_dv_t + \Delta_t f / m \\ x_t & = x_{t-1} + \Delta_t * v_t \end{align}$$
-        where $v$ is velocity, $x$ is position, $k_d$ is a damping coefficient, $f$ is the accumulated force
-        vector, and $m$ is the sphere mass.
-    </p>
-    <p>
-        The modeling assumption used here are that the sphere is accurately modeled as a rigid body.
-    </p>
-    <p>
-        Here is an example of the results after this change.
-        <img src="images/frac_no_resis.gif" width="300px" />
-    <figcaption align="middle">Fracture without Mesh Resistance</figcaption>
-    </p>
-
-    <h4>Mesh Resistance</h4>
-    <p>
-        The second code change to enable realistic fracturing was to make the mesh resist the sphere by applying
-        an opposing force to the sphere. To enable the cloth to apply a resistive force, we added a constant $k_r$
-        to allow us to control the "stretchiness" of the mesh and added the following force point by point on
-        a collision to the sphere
-        $$k_r||x_a - x_b|| * \frac{c - x_b}{||c - x_b||}$$
-        where $x_a$ is the position of a point before sphere displacement, $x_b$ is the position of the point after
-        sphere displacement, and $c$ is the center of the sphere.
-    </p>
-    <p>
-        Overall this code change involved a small change to implement the equation above and a few larger structural
-        changes to how collisions are handled and when sphere moments are updated.
-    </p>
-    <p>
-        The results of this change are here.
-    <div align="middle">
-        <table>
-            <tr>
-                <td>
-                    <img src="images/sphere_bounce.gif" width="300px" />
-                    <figcaption align="middle">Mesh Resisting Sphere</figcaption>
-                </td>
-                <td>
-                    <img src="images/frac_resis.gif" width="300px" />
-                    <figcaption align="middle">Mesh Fracture with Resistance</figcaption>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    </p>
-
-    <h4>Shader Changes</h4>
-    <p>
-        The third major code change we had to make was to enable shaders to show the breaking. To make this change,
-        we decided to break in units of triangles for the shader. If a spring is broken, it is marked broken along
-        with its point masses. We use this flag as a mask variable to each of the shaders; the shaders set the color
-        of a vertex to $(0, 0, 0, 0)$ if it has been broken.
-    </p>
-    <p>
-        The result of this is that the shaders now show holes in the mesh. Although the examples given below are
-        jagged, you can image with a higher resolution mesh the breaks appear more fine. Higher resolution meshes
-        seemed to slow down our computers unbearably so, and as a result these examples are not included.
-    </p>
-    <p>
-        An example image before this code change is here: <br>
-        <div  align="middle"><img align="middle" src="images/portal.gif" width="300px" /></div>
-        <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
-        <br>
-        You will see more successful breaks with the shaders later on.
-    </p>
-
     <h2>Fracture Modeling</h2>
     <h3>Assigning Fracture Thresholds</h3>
     <h4>Random Fracture Thresholds</h4>
@@ -267,6 +185,87 @@
         as a result of the naive sphere intersection code. To remedy this, we changed the code to conform each
         spring to stay the same length after each timestep instead of 1.1 times its length. This pulled the
         vertices away from the sphere and helped our fracture look better.
+    </p>
+
+    <h2>Technical Approach</h2>
+    <h3>Code Infrastructure Changes</h3>
+    <h4>Enabling Forces on Spheres</h4>
+    <p>
+        The first code change necessary to the simulation backbone was to enable spheres to move as forces (e.g.
+        gravity)
+        are applied. This was necessary so that we could collide spheres with pinned meshes to analyze stretches and
+        tears.
+    </p>
+    <p>
+        To make this code change, we simply added a <code>simulate</code> method to the <code>collisionObject</code>
+        class that is called for every collision object in the same loop that the cloth's <code>simulate</code> is.
+        As well, we added a <code>Vector3D</code> force vector that accumulates forces applied to a sphere. The
+        sphere also maintains its first two moments so that we can update its position and velocity as in the
+        pointmass mesh. At every simulation step, we update the sphere as a rigid body around its center which
+        moves according to the following equations $x_t$
+        $$\begin{align} v_t & = k_dv_t + \Delta_t f / m \\ x_t & = x_{t-1} + \Delta_t * v_t \end{align}$$
+        where $v$ is velocity, $x$ is position, $k_d$ is a damping coefficient, $f$ is the accumulated force
+        vector, and $m$ is the sphere mass.
+    </p>
+    <p>
+        The modeling assumption used here are that the sphere is accurately modeled as a rigid body.
+    </p>
+    <p>
+        Here is an example of the results after this change.
+        <img src="images/frac_no_resis.gif" width="300px" />
+    <figcaption align="middle">Fracture without Mesh Resistance</figcaption>
+    </p>
+
+    <h4>Mesh Resistance</h4>
+    <p>
+        The second code change to enable realistic fracturing was to make the mesh resist the sphere by applying
+        an opposing force to the sphere. To enable the cloth to apply a resistive force, we added a constant $k_r$
+        to allow us to control the "stretchiness" of the mesh and added the following force point by point on
+        a collision to the sphere
+        $$k_r||x_a - x_b|| * \frac{c - x_b}{||c - x_b||}$$
+        where $x_a$ is the position of a point before sphere displacement, $x_b$ is the position of the point after
+        sphere displacement, and $c$ is the center of the sphere.
+    </p>
+    <p>
+        Overall this code change involved a small change to implement the equation above and a few larger structural
+        changes to how collisions are handled and when sphere moments are updated.
+    </p>
+    <p>
+        The results of this change are here.
+    <div align="middle">
+        <table>
+            <tr>
+                <td>
+                    <img src="images/sphere_bounce.gif" width="300px" />
+                    <figcaption align="middle">Mesh Resisting Sphere</figcaption>
+                </td>
+                <td>
+                    <img src="images/frac_resis.gif" width="300px" />
+                    <figcaption align="middle">Mesh Fracture with Resistance</figcaption>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    </p>
+
+    <h4>Shader Changes</h4>
+    <p>
+        The third major code change we had to make was to enable shaders to show the breaking. To make this change,
+        we decided to break in units of triangles for the shader. If a spring is broken, it is marked broken along
+        with its point masses. We use this flag as a mask variable to each of the shaders; the shaders set the color
+        of a vertex to $(0, 0, 0, 0)$ if it has been broken.
+    </p>
+    <p>
+        The result of this is that the shaders now show holes in the mesh. Although the examples given below are
+        jagged, you can image with a higher resolution mesh the breaks appear more fine. Higher resolution meshes
+        seemed to slow down our computers unbearably so, and as a result these examples are not included.
+    </p>
+    <p>
+        An example image before this code change is here: <br>
+        <div  align="middle"><img align="middle" src="images/portal.gif" width="300px" /></div>
+        <figcaption align="middle">Figure 4 (The Portal): Fracture before Shader Fix</figcaption>
+        <br>
     </p>
 
     <h3>Other Challenges and Lessons Learned</h3>
